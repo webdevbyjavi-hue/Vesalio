@@ -39,7 +39,10 @@
 
 /* ---------- Reset ---------- */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  background: var(--vesalio-blue-dark);
+}
 body {
   font-family: var(--font-sans);
   color: var(--ink);
@@ -233,6 +236,7 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 .hero {
   min-height: 100vh;
   min-height: 100svh;
+  min-height: 100dvh;
   padding: 0;
   display: flex; align-items: center; justify-content: center;
   position: relative;
