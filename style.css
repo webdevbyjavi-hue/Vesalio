@@ -213,6 +213,19 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 .menu-toggle.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 
+/* ---------- Scroll progress bar ---------- */
+.scroll-progress-bar {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--vesalio-blue), var(--vesalio-blue-dark));
+  transition: width 0.1s linear;
+  opacity: 0;
+  pointer-events: none;
+}
+.site-header.scrolled .scroll-progress-bar { opacity: 1; }
+
 /* ---------- HERO ---------- */
 .hero {
   min-height: calc(100vh - 80px);
@@ -236,20 +249,6 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
   background:
     linear-gradient(180deg, rgba(154,179,196,0.55) 0%, rgba(111,138,158,0.65) 60%, rgba(77,107,128,0.80) 100%);
 }
-/* ---------- Scroll Stack sections ---------- */
-.scroll-stack-card {
-  border-radius: 24px 24px 0 0;
-  transform-origin: top center;
-  backface-visibility: hidden;
-  isolation: isolate;
-  position: relative;
-  z-index: 1;
-}
-
-.scroll-stack-end {
-  height: 1px;
-}
-
 .hero-content {
   position: relative; z-index: 2;
   text-align: center; color: #fff;
@@ -889,27 +888,6 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 
 /* ---------- Mobile ---------- */
 @media (max-width: 720px) {
-  /* Disable scroll stack effect on mobile - causes overlapping */
-  .scroll-stack-card {
-    border-radius: 0 !important;
-    transform: none !important;
-    will-change: auto !important;
-    position: relative !important;
-    z-index: 1 !important;
-  }
-  
-  /* Remove scroll stack end marker on mobile */
-  .scroll-stack-end {
-    display: none;
-  }
-  
-  /* Footer - ensure it stays at end */
-  .footer {
-    position: relative;
-    margin-top: 0;
-    clear: both;
-  }
-  
   /* Navigation */
   .menu-toggle { display: flex; }
   .nav {
@@ -1101,6 +1079,13 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
     width: 44px;
     height: 44px;
     font-size: 1.2rem;
+  }
+
+  /* Staggered card entrance on mobile */
+  .services-grid .service-card.reveal,
+  .team-grid .team-card.reveal {
+    transform: translateY(44px) scale(0.97);
+    will-change: transform, opacity;
   }
 
   /* Floating WhatsApp */

@@ -2,9 +2,6 @@
    VESALIO CLINIC — Landing Page Script
    ========================================================= */
 
-let globalLenis = null;
-
-
 document.addEventListener('DOMContentLoaded', () => {
 
   /* -----------------------------------------------------
@@ -17,9 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
      Sticky header shadow on scroll
   ----------------------------------------------------- */
   const header = document.getElementById('siteHeader');
+  const progressBar = document.getElementById('scrollProgressBar');
   const applyHeaderStyle = () => {
     if (window.scrollY > 40) header.classList.add('scrolled');
     else header.classList.remove('scrolled');
+
+    if (progressBar) {
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+      progressBar.style.width = pct + '%';
+    }
   };
   applyHeaderStyle();
   window.addEventListener('scroll', applyHeaderStyle, { passive: true });
@@ -80,6 +84,15 @@ document.addEventListener('DOMContentLoaded', () => {
     { threshold: 0.12, rootMargin: '0px 0px -60px 0px' }
   );
   revealEls.forEach(el => revealObserver.observe(el));
+
+  // Stagger delays for grid cards on mobile
+  if (window.innerWidth <= 720) {
+    ['.services-grid .service-card', '.team-grid .team-card'].forEach(sel => {
+      document.querySelectorAll(sel).forEach((card, i) => {
+        card.style.transitionDelay = `${(i % 3) * 80}ms`;
+      });
+    });
+  }
 
   /* -----------------------------------------------------
      Count-up animation for the stat badge
@@ -194,11 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* -----------------------------------------------------
-     Scroll stack sections + Lenis smooth scroll
-  ----------------------------------------------------- */
-  initScrollStack();
-
-  /* -----------------------------------------------------
      Smooth anchor scroll with header offset
   ----------------------------------------------------- */
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -210,11 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const headerH = header.offsetHeight;
       const top = target.getBoundingClientRect().top + window.scrollY - headerH + 2;
-      if (globalLenis) {
-        globalLenis.scrollTo(top, { duration: 1.2 });
-      } else {
-        window.scrollTo({ top, behavior: 'smooth' });
-      }
+      window.scrollTo({ top, behavior: 'smooth' });
     });
   });
 
@@ -233,141 +237,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-/* =========================================================
-   Scroll Stack — stacking section effect (ported from ReactBits)
-   ========================================================= */
-function initScrollStack() {
-  // Disable scroll stack on mobile - causes overlapping issues
-  // Also check on resize to handle browser resizing
-  if (window.innerWidth <= 720) {
-    // Clear any existing transforms when disabling
-    document.querySelectorAll('.scroll-stack-card').forEach(card => {
-      card.style.transform = '';
-    });
-    return;
-  }
-  
-  const cards = Array.from(document.querySelectorAll('.scroll-stack-card'));
-  if (!cards.length) return;
-
-  const endElement = document.querySelector('.scroll-stack-end');
-
-  const ITEM_SCALE         = 0.03;
-  const ITEM_STACK_DIST    = 50;
-  const STACK_POSITION     = '15%';
-  const SCALE_END_POSITION = '10%';
-  const BASE_SCALE         = 0.9;
-
-  cards.forEach((card, i) => {
-    card.style.zIndex             = String(i + 1);
-    card.style.transformOrigin    = 'top center';
-    card.style.backfaceVisibility = 'hidden';
-    card.style.willChange         = 'transform';
-  });
-
-  // Cache true layout positions (transforms cleared so BoundingClientRect isn't
-  // contaminated by any previously applied translateY).
-  // Deferred to window.load so image heights are finalised before measuring.
-  let cardTops    = [];
-  let cardHeights = [];
-  let endTop      = 0;
-  let ready       = false;
-
-  const measureOffsets = () => {
-    cards.forEach(c => { c.style.transform = 'none'; });
-    void cards[0].getBoundingClientRect(); // flush style changes before reading
-    cardTops    = cards.map(c => c.getBoundingClientRect().top + window.scrollY);
-    cardHeights = cards.map(c => c.offsetHeight);
-    endTop      = endElement
-      ? endElement.getBoundingClientRect().top + window.scrollY
-      : document.body.scrollHeight;
-    ready = true;
-  };
-
-  const parsePercent = (val, h) =>
-    typeof val === 'string' && val.includes('%')
-      ? (parseFloat(val) / 100) * h
-      : parseFloat(val);
-
-  const clamp01 = (t, a, b) =>
-    b <= a ? 0 : Math.max(0, Math.min(1, (t - a) / (b - a)));
-
-  const cache = new Map();
-
-  const update = () => {
-    if (!ready) return;
-
-    const scrollTop = window.scrollY;
-    const vh        = window.innerHeight;
-    const stackPx   = parsePercent(STACK_POSITION, vh);
-
-    cards.forEach((card, i) => {
-      const cardTop    = cardTops[i];
-      const cardHeight = cardHeights[i];
-
-      // Pin triggers when the section's BOTTOM reaches stackPx from viewport top.
-      // This lets the user scroll through the entire section before it docks.
-      const pinStart = cardTop + cardHeight - stackPx - ITEM_STACK_DIST * i;
-      const pinEnd   = endTop  - vh / 2;
-
-      // Scale animates over a short window right as the section docks.
-      const scaleEnd = pinStart + vh * 0.08;
-
-      const scaleP = clamp01(scrollTop, pinStart, scaleEnd);
-      const scale  = 1 - scaleP * (1 - (BASE_SCALE + i * ITEM_SCALE));
-
-      let translateY = 0;
-      if (scrollTop >= pinStart && scrollTop <= pinEnd) {
-        translateY = scrollTop - cardTop + stackPx + ITEM_STACK_DIST * i;
-      } else if (scrollTop > pinEnd) {
-        translateY = pinEnd   - cardTop + stackPx + ITEM_STACK_DIST * i;
-      }
-
-      const tY = Math.round(translateY * 100) / 100;
-      const s  = Math.round(scale * 1000) / 1000;
-
-      const prev = cache.get(i);
-      if (!prev || Math.abs(prev.tY - tY) > 0.1 || Math.abs(prev.s - s) > 0.001) {
-        card.style.transform = `translate3d(0,${tY}px,0) scale(${s})`;
-        cache.set(i, { tY, s });
-      }
-    });
-  };
-
-  // RAF-throttled scroll — at most one update per animation frame
-  let rafId = null;
-  window.addEventListener('scroll', () => {
-    if (rafId) return;
-    rafId = requestAnimationFrame(() => { update(); rafId = null; });
-  }, { passive: true });
-
-  // Resize: re-measure after layout settles
-  // Also re-enable scroll stack if resizing from mobile to desktop
-  window.addEventListener('resize', () => {
-    if (window.innerWidth > 720) {
-      // Re-enable scroll stack when going to desktop
-      cache.clear();
-      measureOffsets();
-      update();
-    } else {
-      // Clear transforms when going to mobile
-      cards.forEach(card => {
-        card.style.transform = '';
-        card.style.zIndex = '';
-        card.style.willChange = '';
-      });
-    }
-  });
-
-  // Defer first measurement until all images/fonts are loaded so section
-  // heights (which contain photos) are accurate before we cache positions.
-  if (document.readyState === 'complete') {
-    measureOffsets();
-    update();
-  } else {
-    window.addEventListener('load', () => { measureOffsets(); update(); }, { once: true });
-  }
-}
 
 // ── Flying Logo ──────────────────────────────────────────────────────────────
 (function () {
@@ -385,6 +254,7 @@ function initScrollStack() {
   Object.assign(proxy.style, {
     position: 'fixed', borderRadius: '50%', objectFit: 'cover',
     pointerEvents: 'none', zIndex: '999', display: 'block', opacity: '0',
+    left: '0', top: '0', willChange: 'transform, opacity',
   });
   document.body.appendChild(proxy);
 
@@ -394,6 +264,8 @@ function initScrollStack() {
   function measureHero() {
     heroRect = heroImg.getBoundingClientRect();
     heroSize = heroRect.width;
+    proxy.style.width  = heroSize + 'px';
+    proxy.style.height = heroSize + 'px';
   }
 
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -436,10 +308,8 @@ function initScrollStack() {
     const cx   = lerp(heroRect.left + heroSize / 2, navRect.left + NAV_SIZE / 2, eased);
     const cy   = lerp(heroRect.top  + heroSize / 2, navRect.top  + NAV_SIZE / 2, eased);
 
-    proxy.style.width     = size + 'px';
-    proxy.style.height    = size + 'px';
-    proxy.style.left      = (cx - size / 2) + 'px';
-    proxy.style.top       = (cy - size / 2) + 'px';
+    const s = heroSize > 0 ? size / heroSize : 1;
+    proxy.style.transform = `translate(${cx - heroSize / 2}px, ${cy - heroSize / 2}px) scale(${s})`;
     proxy.style.opacity   = '1';
     proxy.style.border    = `3px solid rgba(255,255,255,${lerp(0.45, 0, eased)})`;
     proxy.style.boxShadow = `0 ${lerp(10, 0, eased)}px ${lerp(40, 0, eased)}px rgba(0,0,0,${lerp(0.35, 0, eased)})`;
