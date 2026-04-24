@@ -15,18 +15,25 @@ document.addEventListener('DOMContentLoaded', () => {
   ----------------------------------------------------- */
   const header = document.getElementById('siteHeader');
   const progressBar = document.getElementById('scrollProgressBar');
+  let rafPending = false;
   const applyHeaderStyle = () => {
     if (window.scrollY > 40) header.classList.add('scrolled');
     else header.classList.remove('scrolled');
 
     if (progressBar) {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
-      progressBar.style.width = pct + '%';
+      const pct = docHeight > 0 ? window.scrollY / docHeight : 0;
+      progressBar.style.transform = `scaleX(${pct})`;
+    }
+  };
+  const onScroll = () => {
+    if (!rafPending) {
+      rafPending = true;
+      requestAnimationFrame(() => { applyHeaderStyle(); rafPending = false; });
     }
   };
   applyHeaderStyle();
-  window.addEventListener('scroll', applyHeaderStyle, { passive: true });
+  window.addEventListener('scroll', onScroll, { passive: true });
 
   /* -----------------------------------------------------
      Mobile menu toggle
@@ -85,13 +92,22 @@ document.addEventListener('DOMContentLoaded', () => {
   );
   revealEls.forEach(el => revealObserver.observe(el));
 
-  // Stagger delays for grid cards on mobile
-  if (window.innerWidth <= 720) {
-    ['.services-grid .service-card', '.team-grid .team-card'].forEach(sel => {
-      document.querySelectorAll(sel).forEach((card, i) => {
-        card.style.transitionDelay = `${(i % 3) * 80}ms`;
+  // Scale-from-center effect for grid cards on mobile
+  if (window.innerWidth <= 720 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const scaleCards = document.querySelectorAll('.services-grid .service-card, .team-grid .team-card');
+    function updateCardScales() {
+      const vh = window.innerHeight;
+      const center = vh / 2;
+      scaleCards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.top + rect.height / 2;
+        const dist = Math.abs(cardCenter - center);
+        const proximity = Math.max(0, 1 - dist / (vh * 0.6));
+        card.style.transform = `scale(${(0.82 + 0.18 * proximity).toFixed(3)})`;
       });
-    });
+    }
+    window.addEventListener('scroll', updateCardScales, { passive: true });
+    updateCardScales();
   }
 
   /* -----------------------------------------------------
