@@ -235,8 +235,6 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 /* ---------- HERO ---------- */
 .hero {
   min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
   padding: 0;
   display: flex; align-items: center; justify-content: center;
   position: relative;
