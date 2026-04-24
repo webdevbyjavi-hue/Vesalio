@@ -92,23 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
   );
   revealEls.forEach(el => revealObserver.observe(el));
 
-  // Scale-from-center effect for grid cards on mobile
-  if (window.innerWidth <= 720 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const scaleCards = document.querySelectorAll('.services-grid .service-card, .team-grid .team-card');
-    function updateCardScales() {
-      const vh = window.innerHeight;
-      const center = vh / 2;
-      scaleCards.forEach(card => {
-        const rect = card.getBoundingClientRect();
-        const cardCenter = rect.top + rect.height / 2;
-        const dist = Math.abs(cardCenter - center);
-        const proximity = Math.max(0, 1 - dist / (vh * 0.6));
-        card.style.transform = `scale(${(0.82 + 0.18 * proximity).toFixed(3)})`;
-      });
-    }
-    window.addEventListener('scroll', updateCardScales, { passive: true });
-    updateCardScales();
-  }
 
   /* -----------------------------------------------------
      Count-up animation for the stat badge
@@ -139,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
      Parallax hero background
   ----------------------------------------------------- */
   const heroBg = document.querySelector('.hero-bg');
-  if (heroBg) {
+  if (heroBg && window.innerWidth > 720) {
     window.addEventListener('scroll', () => {
       const y = window.scrollY;
       if (y < 600) heroBg.style.transform = `translateY(${y * 0.25}px) scale(1.1)`;
@@ -271,6 +254,8 @@ document.addEventListener('DOMContentLoaded', () => {
     position: 'fixed', borderRadius: '50%', objectFit: 'cover',
     pointerEvents: 'none', zIndex: '999', display: 'block', opacity: '0',
     left: '0', top: '0', willChange: 'transform, opacity',
+    border: '3px solid rgba(255,255,255,0.45)',
+    boxShadow: '0 10px 40px rgba(0,0,0,0.35)',
   });
   document.body.appendChild(proxy);
 
@@ -327,8 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const s = heroSize > 0 ? size / heroSize : 1;
     proxy.style.transform = `translate(${cx - heroSize / 2}px, ${cy - heroSize / 2}px) scale(${s})`;
     proxy.style.opacity   = '1';
-    proxy.style.border    = `3px solid rgba(255,255,255,${lerp(0.45, 0, eased)})`;
-    proxy.style.boxShadow = `0 ${lerp(10, 0, eased)}px ${lerp(40, 0, eased)}px rgba(0,0,0,${lerp(0.35, 0, eased)})`;
   }
 
   window.addEventListener('scroll', () => {
