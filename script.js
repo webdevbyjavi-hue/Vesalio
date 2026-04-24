@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const thresholds = Array.from({ length: 21 }, (_, i) => i / 20);
     const scaleObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        entry.target.style.transform = `scale(${(0.85 + 0.15 * entry.intersectionRatio).toFixed(3)})`;
+        entry.target.style.transform = `scale(${(0.80 + 0.25 * entry.intersectionRatio).toFixed(3)})`;
       });
     }, { threshold: thresholds });
     scaleCards.forEach(card => scaleObserver.observe(card));

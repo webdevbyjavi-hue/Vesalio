@@ -1106,7 +1106,7 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 
   .services-grid .service-card,
   .team-grid .team-card {
-    transition: transform 120ms ease-out, opacity 800ms ease, box-shadow var(--transition);
+    transition: transform 180ms cubic-bezier(.2,.8,.2,1), opacity 800ms ease, box-shadow var(--transition);
     will-change: transform, opacity;
   }
   .services-grid .service-card.reveal,
