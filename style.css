@@ -41,13 +41,13 @@
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html {
   scroll-behavior: smooth;
-  background: var(--vesalio-blue-dark);
+  background: var(--vesalio-blue);
 }
 body {
   font-family: var(--font-sans);
   color: var(--ink);
   line-height: 1.6;
-  background: var(--vesalio-blue-dark);
+  background: var(--vesalio-blue);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -239,7 +239,7 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
   display: flex; align-items: center; justify-content: center;
   position: relative;
   overflow: hidden;
-  background-color: var(--vesalio-blue-dark);
+  background-color: var(--vesalio-blue);
 }
 .hero-bg {
   position: absolute; inset: 0;
