@@ -92,6 +92,21 @@ document.addEventListener('DOMContentLoaded', () => {
   );
   revealEls.forEach(el => revealObserver.observe(el));
 
+  /* -----------------------------------------------------
+     Scale-from-center effect for grid cards on mobile
+     Uses IntersectionObserver so no getBoundingClientRect
+     on every scroll frame — zero forced layout cost.
+  ----------------------------------------------------- */
+  if (window.innerWidth <= 720 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const scaleCards = document.querySelectorAll('.services-grid .service-card, .team-grid .team-card');
+    const thresholds = Array.from({ length: 21 }, (_, i) => i / 20);
+    const scaleObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        entry.target.style.transform = `scale(${(0.85 + 0.15 * entry.intersectionRatio).toFixed(3)})`;
+      });
+    }, { threshold: thresholds });
+    scaleCards.forEach(card => scaleObserver.observe(card));
+  }
 
   /* -----------------------------------------------------
      Count-up animation for the stat badge
