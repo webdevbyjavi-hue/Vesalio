@@ -13,6 +13,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -117,6 +120,20 @@
           <h2 class="section-title">Especialidades <span class="accent">terapéuticas</span></h2>
           <p class="section-lead">En nuestro consultorio ofrecemos tratamientos diseñados para cada paciente y cada objetivo.</p>
         </div>
+
+        <section class="services-carousel-section">
+          <div class="services-carousel-wrapper">
+
+            <div class="services-carousel" id="servicesCarousel"></div>
+
+            <div class="services-carousel-controls">
+              <button id="servicePrev">←</button>
+              <button id="serviceNext">→</button>
+            </div>
+
+          </div>
+        </section>
+
 
         <div class="services-grid">
           <article class="service-card reveal" data-service="ejercicio">
@@ -437,5 +454,7 @@
   </a>
 
 <script src="script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
 </body>
 </html>

@@ -1210,3 +1210,104 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
     transform: scale(1);
   }
 }
+
+
+.services-carousel-section {
+  padding: 40px 20px 40px; /* more bottom space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.services-carousel-wrapper {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  perspective: 1200px;
+}
+
+.services-carousel {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  transform-style: preserve-3d;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  align-items: center;
+}
+
+.services-carousel-card {
+  position: absolute;
+  width: 280px;
+  height: 200px;
+  background: var(--vesalio-blue);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  backface-visibility: hidden;
+}
+
+.services-carousel-card i {
+  color: white;
+}
+
+.services-carousel-content {
+  margin-top: 40px;
+}
+
+#serviceTitle {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+#serviceDescription {
+  color: var(--ink);
+  max-width: 600px;
+  margin: auto;
+}
+
+.services-carousel-controls {
+  margin-top: 25px;
+}
+
+.services-carousel-controls button {
+  background: var(--vesalio-blue);
+  border: none;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 50%;
+  margin: 0 8px;
+  cursor: pointer;
+}
+
+.services-carousel-controls button:hover {
+  background: var(--vesalio-blue-deep);
+}
+
+.card-inner {
+  text-align: center;
+  padding: 15px;
+}
+
+.card-inner h3 {
+  font-size: 0.9rem;
+  margin: 10px 0 5px;
+}
+
+.card-inner p {
+  font-size: 0.75rem;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .services-carousel {
+    height: 520px;
+    overflow: hidden;
+  }
+}

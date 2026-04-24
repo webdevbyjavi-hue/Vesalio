@@ -2,6 +2,12 @@
    VESALIO CLINIC — Landing Page Script
    ========================================================= */
 
+let isMobile = window.innerWidth < 768;
+
+window.addEventListener("resize", () => {
+  isMobile = window.innerWidth < 768;
+});
+
 document.addEventListener('DOMContentLoaded', () => {
 
   /* -----------------------------------------------------
@@ -343,3 +349,130 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('load', () => { measureHero(); update(); }, { once: true });
   }
 }());
+
+
+(function () {
+
+  if (!window.gsap) {
+    console.warn("GSAP not loaded");
+    return;
+  }
+
+  const services = [
+    { name: "Ejercicio terapéutico personalizado", description: "Programas específicos que se adaptan a tu condición, objetivos y nivel de actividad.", icon: "fas fa-dumbbell" },
+    { name: "Evaluación de movimiento funcional", description: "Analizamos patrones de movimiento para detectar deficiencias y prevenir lesiones.", icon: "fas fa-person-running" },
+    { name: "Evaluación de técnica de carrera", description: "Biomecánica aplicada para corredores: cadencia y eficiencia.", icon: "fas fa-shoe-prints" },
+    { name: "Descarga muscular manual", description: "Terapia manual para liberar tensión y mejorar recuperación.", icon: "fas fa-hand-holding-medical" },
+    { name: "Presoterapia", description: "Activa la circulación y reduce fatiga muscular.", icon: "fas fa-wind" },
+    { name: "Electroterapia", description: "Corrientes para analgesia y desinflamación.", icon: "fas fa-wave-square" },
+    { name: "Electroestimulación", description: "Activación muscular para rehabilitación.", icon: "fas fa-bolt-lightning" },
+    { name: "Punción seca", description: "Liberación de puntos gatillo.", icon: "fas fa-syringe" },
+    { name: "Ventosas", description: "Estimula circulación y relaja tejidos.", icon: "fas fa-circle-notch" },
+    { name: "Vendaje multicapa", description: "Soporte funcional y estabilidad.", icon: "fas fa-bandage" }
+  ];
+
+  const carousel = document.getElementById("servicesCarousel");
+  if (!carousel) return;
+
+  let angle = 0;
+  const radius = 250;
+  const total = services.length;
+  const step = 360 / total;
+
+  const cards = services.map(service => {
+    const div = document.createElement("div");
+    div.className = "services-carousel-card";
+    div.innerHTML = `
+      <div class="card-inner">
+      <i class="${service.icon}"></i>
+      <h3>${service.name}</h3>
+      <p>${service.description}</p>
+  </div>
+`;
+    carousel.appendChild(div);
+    return div;
+  });
+
+
+
+  function position() {
+
+  const activeIndex = Math.round((-angle / step) % total + total) % total;
+
+  if (isMobile) {
+
+    const visibleCount = 5; // must be odd
+    const centerOffset = Math.floor(visibleCount / 2);  
+
+    // 📱 MOBILE: vertical stack
+    cards.forEach((card, i) => {
+      // const offset = i - (Math.round((-angle / step) % total + total) % total);
+
+      let offset = (i - activeIndex + total) % total;
+      if (offset > total / 2) offset -= total;
+
+      // 🔥 shift so center card = 0
+      offset -= centerOffset;
+
+      const isActive = offset === 0;
+      
+      gsap.to(card, {
+        x: 0,
+        y: offset * 100,
+        scale: isActive ? 1.1 : 0.9,
+        opacity: isActive ? 1 : 0.6,
+        zIndex: isActive ? 10 : 1,
+        duration: 0.5,
+        ease: "power2.out"
+      });
+    });
+
+  } else {
+    // 💻 DESKTOP: original 3D
+    cards.forEach((card, i) => {
+      const theta = (i * step + angle) * Math.PI / 90;
+
+      const isActive =
+        Math.round((-angle / step) % total + total) % total === i;
+
+      gsap.to(card, {
+        left: "50%",
+        xPercent: -50,
+        x: Math.sin(theta) * radius,
+        z: Math.cos(theta) * radius,
+        rotationY: (i * step + angle),
+        scale: isActive ? 1.15 : 0.9,
+        filter: isActive ? "brightness(1)" : "brightness(0.7)",
+        opacity: 1,
+        zIndex: isActive ? 10 : 1,
+        duration: 0.6,
+        ease: "power3.out"
+      });
+    });
+  }
+}
+
+  function next() {
+    angle -= step;
+    position();
+    updateContent();
+  }
+
+  function prev() {
+    angle += step;
+    position();
+    updateContent();
+  }
+
+  document.getElementById("serviceNext")?.addEventListener("click", next);
+  document.getElementById("servicePrev")?.addEventListener("click", prev);
+
+  setInterval(next, 2500);
+
+  setInterval(() => {
+    if (isMobile) next();
+  }, 2500);
+
+  position();
+
+})();
