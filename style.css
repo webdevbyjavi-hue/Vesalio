@@ -47,7 +47,7 @@ body {
   font-family: var(--font-sans);
   color: var(--ink);
   line-height: 1.6;
-  background: var(--vesalio-white);
+  background: var(--vesalio-blue-dark);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
