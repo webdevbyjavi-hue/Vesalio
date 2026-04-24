@@ -1241,6 +1241,8 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 
 .services-carousel-card {
   position: absolute;
+  top: 50%;
+  left: 50%;
   width: 280px;
   height: 200px;
   background: var(--vesalio-blue);

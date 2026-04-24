@@ -375,103 +375,96 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!carousel) return;
 
   let angle = 0;
-  const radius = 250;
   const total = services.length;
   const step = 360 / total;
+  const radius = 250;
 
   const cards = services.map(service => {
     const div = document.createElement("div");
     div.className = "services-carousel-card";
     div.innerHTML = `
       <div class="card-inner">
-      <i class="${service.icon}"></i>
-      <h3>${service.name}</h3>
-      <p>${service.description}</p>
-  </div>
-`;
+        <i class="${service.icon}"></i>
+        <h3>${service.name}</h3>
+        <p>${service.description}</p>
+      </div>`;
     carousel.appendChild(div);
     return div;
   });
 
-
-
   function position() {
+    const mobile = window.innerWidth < 768;
+    const activeIndex = Math.round((-angle / step) % total + total) % total;
 
-  const activeIndex = Math.round((-angle / step) % total + total) % total;
+    if (mobile) {
+      cards.forEach((card, i) => {
+        let offset = (i - activeIndex + total) % total;
+        if (offset > total / 2) offset -= total;
+        const absOffset = Math.abs(offset);
+        const isActive = offset === 0;
 
-  if (isMobile) {
-
-    const visibleCount = 5; // must be odd
-    const centerOffset = Math.floor(visibleCount / 2);  
-
-    // 📱 MOBILE: vertical stack
-    cards.forEach((card, i) => {
-      // const offset = i - (Math.round((-angle / step) % total + total) % total);
-
-      let offset = (i - activeIndex + total) % total;
-      if (offset > total / 2) offset -= total;
-
-      // 🔥 shift so center card = 0
-      offset -= centerOffset;
-
-      const isActive = offset === 0;
-      
-      gsap.to(card, {
-        x: 0,
-        y: offset * 100,
-        scale: isActive ? 1.1 : 0.9,
-        opacity: isActive ? 1 : 0.6,
-        zIndex: isActive ? 10 : 1,
-        duration: 0.5,
-        ease: "power2.out"
+        gsap.to(card, {
+          xPercent: -50,
+          yPercent: -50,
+          x: 0,
+          y: offset * 120,
+          z: 0,
+          rotationY: 0,
+          scale: isActive ? 1.05 : Math.max(0.72, 0.88 - absOffset * 0.05),
+          opacity: absOffset > 2 ? 0 : isActive ? 1 : Math.max(0, 0.6 - (absOffset - 1) * 0.25),
+          zIndex: isActive ? 10 : Math.max(1, 5 - absOffset),
+          duration: 0.5,
+          ease: "power2.out"
+        });
       });
-    });
+    } else {
+      cards.forEach((card, i) => {
+        const theta = (i * step + angle) * Math.PI / 90;
+        const isActive = activeIndex === i;
 
-  } else {
-    // 💻 DESKTOP: original 3D
-    cards.forEach((card, i) => {
-      const theta = (i * step + angle) * Math.PI / 90;
-
-      const isActive =
-        Math.round((-angle / step) % total + total) % total === i;
-
-      gsap.to(card, {
-        left: "50%",
-        xPercent: -50,
-        x: Math.sin(theta) * radius,
-        z: Math.cos(theta) * radius,
-        rotationY: (i * step + angle),
-        scale: isActive ? 1.15 : 0.9,
-        filter: isActive ? "brightness(1)" : "brightness(0.7)",
-        opacity: 1,
-        zIndex: isActive ? 10 : 1,
-        duration: 0.6,
-        ease: "power3.out"
+        gsap.to(card, {
+          left: "50%",
+          xPercent: -50,
+          yPercent: -50,
+          x: Math.sin(theta) * radius,
+          y: 0,
+          z: Math.cos(theta) * radius,
+          rotationY: (i * step + angle),
+          scale: isActive ? 1.15 : 0.9,
+          filter: isActive ? "brightness(1)" : "brightness(0.7)",
+          opacity: 1,
+          zIndex: isActive ? 10 : 1,
+          duration: 0.6,
+          ease: "power3.out"
+        });
       });
-    });
-  }
-}
-
-  function next() {
-    angle -= step;
-    position();
-    updateContent();
+    }
   }
 
-  function prev() {
-    angle += step;
-    position();
-    updateContent();
-  }
+  function next() { angle -= step; position(); }
+  function prev() { angle += step; position(); }
 
   document.getElementById("serviceNext")?.addEventListener("click", next);
   document.getElementById("servicePrev")?.addEventListener("click", prev);
 
-  setInterval(next, 2500);
+  setInterval(next, 3000);
 
-  setInterval(() => {
-    if (isMobile) next();
-  }, 2500);
+  let touchStartX = 0, touchStartY = 0;
+  carousel.addEventListener("touchstart", e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  carousel.addEventListener("touchend", e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40) {
+      dy < 0 ? next() : prev();
+    } else if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      dx < 0 ? next() : prev();
+    }
+  }, { passive: true });
+
+  window.addEventListener("resize", position, { passive: true });
 
   position();
 
