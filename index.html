@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#9AB3C4" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="description" content="Vesalio Clinic — Fisioterapia deportiva y ortopedia en CDMX. Mejoramos, optimizamos y restauramos el movimiento con planes personalizados." />
+  <title>Vesalio Clinic — Fisioterapia Deportiva y Ortopedia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- ===================== NAVIGATION ===================== -->
+  <header class="site-header" id="siteHeader">
+    <div class="nav-container">
+      <a href="#inicio" class="brand">
+        <img src="./assets/logo_vesalio.jpg" alt="Logo Vesalio Clinic" id="navLogoImg" class="nav-logo-img" loading="eager" width="36" height="36" />
+        <span class="brand-text">
+          <span class="brand-name">Vesalio Clinic</span>
+          <span class="brand-tag">Fisioterapia deportiva y ortopedia</span>
+        </span>
+      </a>
+
+      <nav class="nav" id="mainNav">
+        <a href="#inicio" class="nav-link active">Inicio</a>
+        <a href="#nosotros" class="nav-link">Nosotros</a>
+        <a href="#servicios" class="nav-link">Servicios</a>
+        <a href="#equipo" class="nav-link">Equipo</a>
+        <a href="#ubicacion" class="nav-link">Ubicación</a>
+        <a href="#contacto" class="nav-link cta-link" role="button">Agenda tu cita</a>
+      </nav>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+      
+    </div>
+  </header>
+
+  <main>
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" id="inicio">
+      <div class="hero-bg" style="background-image: url('images/hero.jpg');"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <img src="./assets/logo_vesalio.jpg" alt="Logo Vesalio Clinic" id="heroLogoImg" class="hero-section-img" loading="eager" width="150" height="150" />
+        <h1 class="hero-title">Vesalio Clinic</h1>
+        <p class="hero-subtitle">Fisioterapia deportiva y ortopedia</p>
+        <div class="hero-cta">
+          <a href="#contacto" class="btn btn-primary"><i class="fas fa-calendar-check"></i> Agenda tu cita</a>
+          <a href="#servicios" class="btn btn-outline">Nuestros servicios</a>
+        </div>
+      </div>
+      <div class="hero-scroll">
+        <span>Descubre más</span>
+        <div class="scroll-indicator"></div>
+      </div>
+    </section>
+
+    <!-- ===================== QUIÉNES SOMOS ===================== -->
+    <section class="about scroll-stack-card" id="nosotros">
+      <div class="container about-grid">
+        <div class="about-text reveal">
+          <span class="section-eyebrow">¿Quiénes somos?</span>
+          <h2 class="section-title">Tu bienestar físico es <span class="accent">lo más importante</span></h2>
+          <p>
+            En <strong>Vesalio Clinic</strong> buscamos brindarte un servicio de calidad para prevenir lesiones y reintegrarte a
+            las actividades de vida diaria, laborales, recreativas y del gesto deportivo, por medio de nuestras
+            especialidades terapéuticas.
+          </p>
+          <p>
+            Somos una clínica de fisioterapia y rehabilitación deportiva que busca
+            <em>mejorar, optimizar y restaurar</em> el movimiento de nuestros pacientes, creando un plan de
+            tratamiento personalizado.
+          </p>
+          <div class="about-pillars">
+            <div class="pillar">
+              <div class="pillar-icon"><i class="fas fa-bullseye"></i></div>
+              <h4>Prevenir</h4>
+              <p>Evaluación integral para anticipar lesiones.</p>
+            </div>
+            <div class="pillar">
+              <div class="pillar-icon"><i class="fas fa-bolt"></i></div>
+              <h4>Optimizar</h4>
+              <p>Movimiento eficiente y rendimiento deportivo.</p>
+            </div>
+            <div class="pillar">
+              <div class="pillar-icon"><i class="fas fa-heart-pulse"></i></div>
+              <h4>Restaurar</h4>
+              <p>Reintegración a tu vida diaria y deportiva.</p>
+            </div>
+          </div>
+        </div>
+        <div class="about-image reveal">
+          <img src="images/about.jpg" alt="Terapeuta Vesalio Clinic con paciente" loading="lazy" width="600" height="400" />
+          <div class="about-badge">
+            <span class="badge-number" data-target="100">0</span><span>%</span>
+            <p>Tratamientos<br/>personalizados</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SERVICIOS ===================== -->
+    <section class="services scroll-stack-card" id="servicios">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-eyebrow">Nuestros servicios</span>
+          <h2 class="section-title">Especialidades <span class="accent">terapéuticas</span></h2>
+          <p class="section-lead">En nuestro consultorio ofrecemos tratamientos diseñados para cada paciente y cada objetivo.</p>
+        </div>
+
+        <div class="services-grid">
+          <article class="service-card reveal" data-service="ejercicio">
+            <div class="service-icon"><i class="fas fa-dumbbell"></i></div>
+            <h3>Ejercicio terapéutico personalizado</h3>
+            <p>Programas específicos que se adaptan a tu condición, objetivos y nivel de actividad.</p>
+          </article>
+          <article class="service-card reveal" data-service="movimiento">
+            <div class="service-icon"><i class="fas fa-person-running"></i></div>
+            <h3>Evaluación de movimiento funcional</h3>
+            <p>Analizamos patrones de movimiento para detectar deficiencias y prevenir lesiones.</p>
+          </article>
+          <article class="service-card reveal" data-service="carrera">
+            <div class="service-icon"><i class="fas fa-shoe-prints"></i></div>
+            <h3>Evaluación de técnica de carrera</h3>
+            <p>Biomecánica aplicada para corredores: cadencia, aterrizaje y eficiencia.</p>
+          </article>
+          <article class="service-card reveal" data-service="descarga">
+            <div class="service-icon"><i class="fas fa-hand-holding-medical"></i></div>
+            <h3>Descarga muscular manual</h3>
+            <p>Terapia manual para liberar tensión, mejorar el rango y acelerar la recuperación.</p>
+          </article>
+          <article class="service-card reveal" data-service="presoterapia">
+            <div class="service-icon"><i class="fas fa-wind"></i></div>
+            <h3>Presoterapia</h3>
+            <p>Compresión secuencial que activa la circulación y reduce fatiga muscular.</p>
+          </article>
+          <article class="service-card reveal" data-service="electroterapia">
+            <div class="service-icon"><i class="fas fa-wave-square"></i></div>
+            <h3>Electroterapia</h3>
+            <p>Corrientes terapéuticas para analgesia, desinflamación y reeducación muscular.</p>
+          </article>
+          <article class="service-card reveal" data-service="electroestimulacion">
+            <div class="service-icon"><i class="fas fa-bolt-lightning"></i></div>
+            <h3>Electroestimulación</h3>
+            <p>Activación muscular dirigida para rehabilitación y ganancia de fuerza.</p>
+          </article>
+          <article class="service-card reveal" data-service="puncion">
+            <div class="service-icon"><i class="fas fa-syringe"></i></div>
+            <h3>Punción seca</h3>
+            <p>Técnica precisa sobre puntos gatillo para liberar dolor miofascial.</p>
+          </article>
+          <article class="service-card reveal" data-service="ventosas">
+            <div class="service-icon"><i class="fas fa-circle-notch"></i></div>
+            <h3>Ventosas</h3>
+            <p>Terapia de succión que estimula la circulación y relaja tejidos profundos.</p>
+          </article>
+          <article class="service-card reveal" data-service="vendaje">
+            <div class="service-icon"><i class="fas fa-bandage"></i></div>
+            <h3>Vendaje multicapa</h3>
+            <p>Soporte funcional en varias capas para estabilidad, compresión y protección.</p>
+          </article>
+        </div>
+
+        <div class="services-feature reveal">
+          <img src="images/services.jpg" alt="Sesión de punción seca" loading="lazy" width="600" height="400" />
+          <div class="services-feature-content">
+            <h3>Tratamientos basados en evidencia</h3>
+            <p>
+              Cada técnica se aplica con un criterio clínico riguroso y un plan personalizado, diseñado por nuestro
+              equipo de fisioterapeutas especializados.
+            </p>
+            <a href="#contacto" class="btn btn-primary"><i class="fab fa-whatsapp"></i> Reservar una sesión</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== EQUIPO ===================== -->
+    <section class="team scroll-stack-card" id="equipo">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-eyebrow">Equipo Vesalio</span>
+          <h2 class="section-title">Conoce a quienes cuidan de <span class="accent">tu movimiento</span></h2>
+          <p class="section-lead">Profesionales apasionados del deporte, comprometidos con tu recuperación.</p>
+        </div>
+
+        <div class="team-grid">
+          <article class="team-card reveal" tabindex="0">
+            <div class="team-photo">
+              <img src="images/team-inigo.jpg" alt="Íñigo Salazar" loading="lazy" width="200" height="200" />
+            </div>
+            <div class="team-info">
+              <h3>Íñigo Salazar</h3>
+              <span class="team-role">Fisioterapeuta deportivo</span>
+              <ul class="team-bullets">
+                <li>Especializado en deporte y evaluación de movimiento funcional.</li>
+                <li>Triatleta de medias y largas distancias.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="team-card reveal" tabindex="0">
+            <div class="team-photo">
+              <img src="images/team-ana.jpg" alt="Ana Cristina Suárez" loading="lazy" width="200" height="200" />
+            </div>
+            <div class="team-info">
+              <h3>Ana Cristina Suárez</h3>
+              <span class="team-role">Ortopedia &amp; oncología</span>
+              <ul class="team-bullets">
+                <li>Especialista en ortopedia y secuelas oncológicas, vasculares y linfáticas.</li>
+                <li>Triatleta de cortas distancias.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="team-card reveal" tabindex="0">
+            <div class="team-photo">
+              <img src="images/team-irina.jpg" alt="Irina Segura" loading="lazy" width="200" height="200" />
+            </div>
+            <div class="team-info">
+              <h3>Irina Segura</h3>
+              <span class="team-role">Biomecánica de carrera</span>
+              <ul class="team-bullets">
+                <li>Especialista en ortopedia, deporte y biomecánica de carrera.</li>
+                <li>Triatleta de cortas y medianas distancias, nadadora de aguas abiertas.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="team-card reveal" tabindex="0">
+            <div class="team-photo">
+              <img src="images/team-gabriela.jpg" alt="Gabriela Mejía" loading="lazy" width="200" height="200" />
+            </div>
+            <div class="team-info">
+              <h3>Gabriela Mejía</h3>
+              <span class="team-role">Punción seca</span>
+              <ul class="team-bullets">
+                <li>Especialista en punción seca.</li>
+                <li>Apasionada de la filigrana y el salto de cuerda.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="team-card reveal" tabindex="0">
+            <div class="team-photo">
+              <img src="images/team-florencia.jpg" alt="Florencia Rosso" loading="lazy" width="200" height="200" />
+            </div>
+            <div class="team-info">
+              <h3>Florencia Rosso</h3>
+              <span class="team-role">Psicoterapia</span>
+              <ul class="team-bullets">
+                <li>Psicoterapeuta psicoanalítica.</li>
+                <li>Especialista en niños, adolescentes, TCA's, obesidad y College Counseling.</li>
+                <li>Foodie y fanática de viajar.</li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== AGENDA / CONTACTO ===================== -->
+    <section class="booking scroll-stack-card" id="contacto">
+      <div class="container booking-grid">
+        <div class="booking-info reveal">
+          <span class="section-eyebrow light">Agenda tu cita</span>
+          <h2 class="section-title light">Reserva tu espacio en <span class="accent">minutos</span></h2>
+          <p class="section-lead light">Marlene, nuestra asistente, te dará los espacios disponibles. Atendemos de lunes a viernes de 9:00 a 18:00 h.</p>
+
+          <div class="booking-channels">
+            <a class="channel" href="https://wa.me/525548423467" target="_blank" rel="noopener">
+              <div class="channel-icon wa"><i class="fab fa-whatsapp"></i></div>
+              <div>
+                <span class="channel-label">WhatsApp</span>
+                <span class="channel-value">55 4842 3467</span>
+              </div>
+            </a>
+            <a class="channel" href="tel:+525589520594">
+              <div class="channel-icon ph"><i class="fas fa-phone"></i></div>
+              <div>
+                <span class="channel-label">Consultorio</span>
+                <span class="channel-value">55 8952 0594</span>
+              </div>
+            </a>
+            <div class="channel static">
+              <div class="channel-icon cl"><i class="far fa-clock"></i></div>
+              <div>
+                <span class="channel-label">Horario</span>
+                <span class="channel-value">9:00 a 18:00 h</span>
+              </div>
+            </div>
+            <div class="channel static">
+              <div class="channel-icon pm"><i class="far fa-credit-card"></i></div>
+              <div>
+                <span class="channel-label">Pagos</span>
+                <span class="channel-value">Efectivo · Débito · Crédito</span>
+              </div>
+            </div>
+          </div>
+          <p class="booking-note"><i class="fas fa-file-invoice"></i> Si necesitas factura, háznoslo saber.</p>
+        </div>
+
+        <form class="booking-form reveal" id="bookingForm" novalidate>
+          <h3>Solicita tu cita</h3>
+          <p class="form-lead">Déjanos tus datos y te contactamos por WhatsApp.</p>
+
+          <div class="field">
+            <label for="name">Nombre</label>
+            <input type="text" id="name" name="name" required placeholder="Tu nombre completo" />
+          </div>
+          <div class="field">
+            <label for="phone">Teléfono</label>
+            <input type="tel" id="phone" name="phone" required placeholder="55 0000 0000" />
+          </div>
+          <div class="field">
+            <label for="service">Servicio de interés</label>
+            <select id="service" name="service" required>
+              <option value="">Selecciona un servicio</option>
+              <option>Ejercicio terapéutico personalizado</option>
+              <option>Evaluación de movimiento funcional</option>
+              <option>Evaluación de técnica de carrera</option>
+              <option>Descarga muscular manual</option>
+              <option>Presoterapia</option>
+              <option>Electroterapia</option>
+              <option>Electroestimulación</option>
+              <option>Punción seca</option>
+              <option>Ventosas</option>
+              <option>Vendaje multicapa</option>
+              <option>Psicoterapia</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="message">Cuéntanos tu motivo</label>
+            <textarea id="message" name="message" rows="3" placeholder="Molestia, lesión o meta deportiva"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">
+            <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
+          </button>
+          <p class="form-status" id="formStatus" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===================== UBICACIÓN ===================== -->
+    <section class="location scroll-stack-card" id="ubicacion">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-eyebrow">Nuestra ubicación</span>
+          <h2 class="section-title">Ven a visitarnos en <span class="accent">Bosques de las Lomas</span></h2>
+        </div>
+
+        <div class="location-grid">
+          <div class="location-info reveal">
+            <div class="location-image">
+              <img src="images/location.jpg" alt="Consultorio Vesalio Clinic" loading="lazy" width="600" height="400" />
+            </div>
+            <div class="location-details">
+              <h3><i class="fas fa-location-dot"></i> Dirección</h3>
+              <p>Bosque de Cidros #46 Int. 703<br />Col. Bosques de las Lomas, C.P. 05120, CDMX <em>(exterior naranja)</em>.</p>
+              <p class="location-ref"><i class="fas fa-circle-info"></i> Como referencia, la entrada se encuentra por Bosques de Tabachines.</p>
+              <a class="btn btn-outline" href="https://www.google.com/maps/search/?api=1&query=Bosque+de+Cidros+46+Bosques+de+las+Lomas+CDMX" target="_blank" rel="noopener">
+                <i class="fas fa-map-location-dot"></i> Ver en Google Maps
+              </a>
+            </div>
+          </div>
+
+          <div class="location-map reveal">
+            <iframe
+              title="Ubicación Vesalio Clinic"
+              src="https://www.google.com/maps?q=Bosque%20de%20Cidros%2046%20Bosques%20de%20las%20Lomas%20CDMX&output=embed"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="scroll-stack-end"></div>
+  </main>
+  <!-- ===================== FOOTER / SOCIAL ===================== -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <svg class="brand-mark" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M20,55 C35,25 55,15 75,20 C60,30 50,40 45,55 Z" fill="currentColor"/>
+          <path d="M35,60 C55,35 80,25 105,30 C85,40 70,50 60,62 Z" fill="currentColor"/>
+          <path d="M15,70 Q45,45 90,52 Q60,60 35,72 Z" fill="currentColor"/>
+        </svg>
+        <h3>Vesalio Clinic</h3>
+        <p>Fisioterapia deportiva y ortopedia.<br />Tu movimiento, nuestra pasión.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="#nosotros">Nosotros</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#equipo">Equipo</a></li>
+          <li><a href="#ubicacion">Ubicación</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <ul>
+          <li><i class="fab fa-whatsapp"></i> 55 4842 3467</li>
+          <li><i class="fas fa-phone"></i> 55 8952 0594</li>
+          <li><i class="fas fa-location-dot"></i> Bosques de las Lomas, CDMX</li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Síguenos</h4>
+        <div class="social">
+          <a href="https://instagram.com/vesalioclinic" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://facebook.com/vesalioclinic" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://wa.me/525548423467" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        </div>
+        <p class="footer-handle">@vesalioclinic</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; <span id="year"></span> Vesalio Clinic. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Floating WhatsApp CTA -->
+  <a href="https://wa.me/525548423467" class="float-wa" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+    <span class="float-wa-tooltip">¡Agenda por WhatsApp!</span>
+  </a>
+
+<script src="script.js"></script>
+</body>
+</html>
