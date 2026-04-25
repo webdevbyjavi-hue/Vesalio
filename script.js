@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
      on every scroll frame — zero forced layout cost.
   ----------------------------------------------------- */
   if (window.innerWidth <= 720 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const scaleCards = document.querySelectorAll('.services-grid .service-card, .team-grid .team-card');
+    const scaleCards = document.querySelectorAll('.services-grid .service-card');
     const thresholds = Array.from({ length: 21 }, (_, i) => i / 20);
     const scaleObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -242,11 +242,101 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* -----------------------------------------------------
-     Team card 3D tilt on hover
-  ----------------------------------------------------- */
-  document.querySelectorAll('.team-card').forEach(card => {
-    card.addEventListener('mousemove', (e) => {
+});
+
+/* =========================================================
+   TEAM CAROUSEL — transform-based infinite loop
+   Track slides via translateX; active card is always
+   mathematically centered in the outer container.
+   DOM after cloning:
+     [pre_0..pre_n-1] [orig_0..orig_n-1] [post_0..post_n-1]
+   On transitionend, silently reset from clone zone → original.
+   ========================================================= */
+(function initTeamCarousel() {
+  const outer   = document.querySelector('.team-carousel-outer');
+  const carousel = document.getElementById('teamCarousel');
+  const prevBtn  = document.getElementById('teamPrev');
+  const nextBtn  = document.getElementById('teamNext');
+  if (!carousel || !outer) return;
+
+  const origCards = [...carousel.querySelectorAll('.team-card')];
+  const n = origCards.length;
+
+  // Build pre-clones (reversed prepend → reads [clone_0…clone_n-1] in DOM)
+  [...origCards].reverse().forEach(card => {
+    const clone = card.cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    clone.setAttribute('tabindex', '-1');
+    carousel.prepend(clone);
+  });
+  // Build post-clones (normal order)
+  origCards.forEach(card => {
+    const clone = card.cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    clone.setAttribute('tabindex', '-1');
+    carousel.appendChild(clone);
+  });
+
+  // Helpers
+  function cardStep() {
+    const firstCard = carousel.querySelector('.team-card');
+    const gap = parseFloat(getComputedStyle(carousel).gap) || 20;
+    return firstCard ? firstCard.offsetWidth + gap : 300;
+  }
+
+  // translateX that perfectly centers DOM card domIdx in the outer container
+  function calcTranslate(domIdx) {
+    const step     = cardStep();
+    const cardW    = step - (parseFloat(getComputedStyle(carousel).gap) || 20);
+    const outerW   = outer.clientWidth;
+    return outerW / 2 - domIdx * step - cardW / 2;
+  }
+
+  let currentDOMIndex = n; // start at first original
+  let busy = false;
+
+  function goTo(domIdx, animate) {
+    if (busy && animate) return;
+    busy = animate;
+    carousel.style.transition = animate
+      ? 'transform 460ms cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+      : 'none';
+    carousel.style.transform = `translateX(${calcTranslate(domIdx)}px)`;
+    currentDOMIndex = domIdx;
+    if (!animate) busy = false;
+  }
+
+  // After each animated transition, silently reset if we landed on a clone
+  carousel.addEventListener('transitionend', () => {
+    busy = false;
+    if (currentDOMIndex < n) {
+      goTo(currentDOMIndex + n, false);   // pre-clone → corresponding original
+    } else if (currentDOMIndex >= 2 * n) {
+      goTo(currentDOMIndex - n, false);   // post-clone → corresponding original
+    }
+  });
+
+  // Init position (needs layout to be complete)
+  requestAnimationFrame(() => requestAnimationFrame(() => goTo(n, false)));
+
+  // Recalculate on resize
+  window.addEventListener('resize', () => goTo(currentDOMIndex, false), { passive: true });
+
+  // Buttons
+  if (prevBtn) { prevBtn.disabled = false; prevBtn.addEventListener('click', () => goTo(currentDOMIndex - 1, true)); }
+  if (nextBtn) { nextBtn.disabled = false; nextBtn.addEventListener('click', () => goTo(currentDOMIndex + 1, true)); }
+
+  // Touch swipe
+  let touchX = 0;
+  outer.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  outer.addEventListener('touchend', e => {
+    const dx = touchX - e.changedTouches[0].clientX;
+    if (Math.abs(dx) > 50) goTo(currentDOMIndex + (dx > 0 ? 1 : -1), true);
+  }, { passive: true });
+
+  // 3D tilt on all cards (originals + clones)
+  carousel.querySelectorAll('.team-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
       const r = card.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width - 0.5;
       const y = (e.clientY - r.top) / r.height - 0.5;
@@ -255,7 +345,66 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('mouseleave', () => { card.style.transform = ''; });
   });
 
-});
+  // GSAP staggered entry (original cards only)
+  if (window.gsap) {
+    const obs = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        gsap.from(origCards, { opacity: 0, y: 24, duration: 0.55, stagger: 0.1, ease: 'power2.out' });
+        obs.disconnect();
+      }
+    }, { threshold: 0.1 });
+    obs.observe(outer);
+  }
+})();
+
+/* =========================================================
+   TEAM MODAL — event delegation (works for clones too)
+   ========================================================= */
+(function initTeamModal() {
+  const overlay  = document.getElementById('teamModalOverlay');
+  const carousel = document.getElementById('teamCarousel');
+  if (!overlay || !carousel) return;
+
+  const closeBtn     = document.getElementById('teamModalClose');
+  const modalImg     = document.getElementById('teamModalImg');
+  const modalRole    = document.getElementById('teamModalRole');
+  const modalName    = document.getElementById('teamModalName');
+  const modalBullets = document.getElementById('teamModalBullets');
+
+  function openModal(card) {
+    const img = card.querySelector('.team-photo img');
+    modalImg.src = img.src;
+    modalImg.alt = img.alt;
+    modalName.textContent  = card.querySelector('h3').textContent;
+    modalRole.textContent  = card.querySelector('.team-role').textContent;
+    modalBullets.innerHTML = [...card.querySelectorAll('.team-bullets li')]
+      .map(li => `<li>${li.textContent.trim()}</li>`).join('');
+    overlay.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeModal() {
+    overlay.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  carousel.addEventListener('click', e => {
+    const card = e.target.closest('.team-card');
+    if (card) openModal(card);
+  });
+  carousel.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const card = e.target.closest('.team-card');
+    if (card) { e.preventDefault(); openModal(card); }
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeModal();
+  });
+})();
 
 
 // ── Flying Logo ──────────────────────────────────────────────────────────────
@@ -374,71 +523,73 @@ document.addEventListener('DOMContentLoaded', () => {
   const carousel = document.getElementById("servicesCarousel");
   if (!carousel) return;
 
+  const wrapper = carousel.closest('.services-carousel-wrapper') || carousel.parentElement;
+
   let angle = 0;
   const total = services.length;
   const step = 360 / total;
-  const radius = 250;
 
   const cards = services.map(service => {
     const div = document.createElement("div");
     div.className = "services-carousel-card";
-    div.innerHTML = `
-      <div class="card-inner">
-        <i class="${service.icon}"></i>
-        <h3>${service.name}</h3>
-        <p>${service.description}</p>
-      </div>`;
+    div.innerHTML = `<div class="card-inner"><i class="${service.icon}"></i><h3>${service.name}</h3><p>${service.description}</p></div>`;
     carousel.appendChild(div);
     return div;
   });
 
+  // Pagination dots
+  const dotsEl = document.createElement('div');
+  dotsEl.className = 'carousel-dots';
+  const dots = services.map((_, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'carousel-dot';
+    btn.setAttribute('aria-label', `Ir al servicio ${i + 1}`);
+    btn.addEventListener('click', () => jumpTo(i));
+    dotsEl.appendChild(btn);
+    return btn;
+  });
+  carousel.after(dotsEl);
+
+  function getActiveIndex() {
+    return Math.round((-angle / step) % total + total) % total;
+  }
+
   function position() {
     const mobile = window.innerWidth < 768;
-    const activeIndex = Math.round((-angle / step) % total + total) % total;
+    const SPREAD = mobile ? 220 : 295;
+    const activeIndex = getActiveIndex();
 
-    if (mobile) {
-      cards.forEach((card, i) => {
-        let offset = (i - activeIndex + total) % total;
-        if (offset > total / 2) offset -= total;
-        const absOffset = Math.abs(offset);
-        const isActive = offset === 0;
+    cards.forEach((card, i) => {
+      let offset = (i - activeIndex + total) % total;
+      if (offset > total / 2) offset -= total;
+      const abs = Math.abs(offset);
 
-        gsap.to(card, {
-          xPercent: -50,
-          yPercent: -50,
-          x: 0,
-          y: offset * 120,
-          z: 0,
-          rotationY: 0,
-          scale: isActive ? 1.05 : Math.max(0.72, 0.88 - absOffset * 0.05),
-          opacity: absOffset > 2 ? 0 : isActive ? 1 : Math.max(0, 0.6 - (absOffset - 1) * 0.25),
-          zIndex: isActive ? 10 : Math.max(1, 5 - absOffset),
-          duration: 0.5,
-          ease: "power2.out"
-        });
+      gsap.to(card, {
+        xPercent: -50,
+        yPercent: -50,
+        x: offset * SPREAD,
+        y: 0,
+        z: 0,
+        rotationY: 0,
+        scale: abs === 0 ? 1 : Math.max(0.62, 1 - abs * 0.13),
+        opacity: abs === 0 ? 1 : abs === 1 ? 0.72 : abs === 2 ? 0.28 : 0,
+        filter: 'none',
+        zIndex: total - abs,
+        duration: 0.65,
+        ease: 'expo.out'
       });
-    } else {
-      cards.forEach((card, i) => {
-        const theta = (i * step + angle) * Math.PI / 90;
-        const isActive = activeIndex === i;
+    });
 
-        gsap.to(card, {
-          left: "50%",
-          xPercent: -50,
-          yPercent: -50,
-          x: Math.sin(theta) * radius,
-          y: 0,
-          z: Math.cos(theta) * radius,
-          rotationY: (i * step + angle),
-          scale: isActive ? 1.15 : 0.9,
-          filter: isActive ? "brightness(1)" : "brightness(0.7)",
-          opacity: 1,
-          zIndex: isActive ? 10 : 1,
-          duration: 0.6,
-          ease: "power3.out"
-        });
-      });
-    }
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === activeIndex));
+  }
+
+  function jumpTo(idx) {
+    const active = getActiveIndex();
+    let delta = idx - active;
+    if (delta > total / 2) delta -= total;
+    if (delta < -total / 2) delta += total;
+    angle -= delta * step;
+    position();
   }
 
   function next() { angle -= step; position(); }
@@ -447,8 +598,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById("serviceNext")?.addEventListener("click", next);
   document.getElementById("servicePrev")?.addEventListener("click", prev);
 
-  setInterval(next, 3000);
+  // Click a non-active card to navigate to it
+  carousel.addEventListener('click', e => {
+    const card = e.target.closest('.services-carousel-card');
+    if (!card) return;
+    const idx = cards.indexOf(card);
+    if (idx !== -1 && idx !== getActiveIndex()) jumpTo(idx);
+  });
 
+  // Auto-advance, paused on hover
+  let autoTimer = setInterval(next, 3500);
+  wrapper.addEventListener('mouseenter', () => clearInterval(autoTimer));
+  wrapper.addEventListener('mouseleave', () => { autoTimer = setInterval(next, 3500); });
+
+  // Touch swipe (horizontal only)
   let touchStartX = 0, touchStartY = 0;
   carousel.addEventListener("touchstart", e => {
     touchStartX = e.touches[0].clientX;
@@ -457,15 +620,12 @@ document.addEventListener('DOMContentLoaded', () => {
   carousel.addEventListener("touchend", e => {
     const dx = e.changedTouches[0].clientX - touchStartX;
     const dy = e.changedTouches[0].clientY - touchStartY;
-    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40) {
-      dy < 0 ? next() : prev();
-    } else if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
       dx < 0 ? next() : prev();
     }
   }, { passive: true });
 
   window.addEventListener("resize", position, { passive: true });
-
   position();
 
 })();
