@@ -569,32 +569,64 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
   position: relative;
   overflow: hidden;
   margin-top: 20px;
-  padding: 16px 0 28px;
+  /* 24 px top/bottom so hover lift (-10px) and shadows are never clipped */
+  padding: 24px 0;
 }
 
 .team-carousel {
   display: flex;
   gap: 20px;
-  align-items: flex-start;
-  will-change: transform;
-  /* transition added by JS so goTo(false) can skip it */
+  /* will-change applied only during JS animation to avoid permanent
+     stacking-context that breaks height calculation in some browsers */
 }
 
 .team-carousel .team-card {
   flex: 0 0 280px;
-  height: 430px;
+  height: 460px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* Nav buttons */
+/* Photo: fixed size, never shrinks */
+.team-carousel .team-card .team-photo {
+  flex-shrink: 0;
+}
+
+/* Info: fills remaining vertical space at full content width. */
+.team-carousel .team-card .team-info {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* White-to-transparent gradient that blankets the CTA zone.
+   Reliable regardless of how much text the info section contains.
+   z-index: 1 sits above the info text; CTA gets z-index: 2. */
+.team-carousel .team-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 76px;
+  background: linear-gradient(to top, #fff 38%, transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Nav buttons — outside the overflow:hidden container so they
+   can never be covered by the sliding track */
 .team-carousel-controls {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 10px;
-  margin-top: 8px;
+  margin-top: 16px;
+  position: relative;
+  z-index: 10;
 }
 
 .team-carousel-btn {
@@ -623,9 +655,16 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
   background: linear-gradient(135deg, var(--vesalio-blue-dark), var(--vesalio-blue-deep));
 }
 
-/* "Ver perfil" hint */
+/* "Ver perfil" — absolutely positioned so it takes zero flex space.
+   z-index: 2 keeps it above the gradient fade overlay. */
 .team-card-cta {
-  display: inline-flex;
+  position: absolute;
+  bottom: 22px;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
   align-items: center;
   gap: 6px;
   font-size: 0.7rem;
@@ -633,16 +672,16 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
   text-transform: uppercase;
   color: var(--vesalio-blue-dark);
   font-weight: 600;
-  margin-top: auto;
-  padding-top: 18px;
   opacity: 0;
-  transform: translateY(6px);
+  transform: translateY(4px);
   transition: opacity var(--transition), transform var(--transition);
+  pointer-events: none;
 }
 .team-card:hover .team-card-cta,
 .team-card:focus-visible .team-card-cta {
   opacity: 1;
   transform: none;
+  pointer-events: auto;
 }
 
 /* Modal overlay */
@@ -765,7 +804,7 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 }
 
 .team-card {
-  background: linear-gradient(180deg, var(--vesalio-cloud) 0%, #fff 70%);
+  background: linear-gradient(170deg, var(--vesalio-cloud) 0%, #fff 60%);
   border-radius: var(--radius-md);
   padding: 36px 22px 26px;
   text-align: center;
@@ -773,10 +812,29 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
   position: relative;
   overflow: hidden;
   border: 1px solid var(--line);
+  /* Layered shadow: tight contact shadow + mid diffuse + ambient */
+  box-shadow:
+    0 1px 3px  rgba(77, 107, 128, 0.07),
+    0 5px 14px rgba(77, 107, 128, 0.09),
+    0 14px 36px rgba(77, 107, 128, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+/* Top shimmer highlight — gives the card a glass-like quality */
+.team-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 18%; right: 18%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.95) 50%, transparent);
+  pointer-events: none;
 }
 .team-card:hover, .team-card:focus-visible {
-  transform: translateY(-10px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-8px);
+  box-shadow:
+    0 2px 6px  rgba(77, 107, 128, 0.09),
+    0 10px 28px rgba(77, 107, 128, 0.15),
+    0 28px 56px rgba(77, 107, 128, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   outline: none;
 }
 .team-photo {
@@ -1243,11 +1301,21 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
   }
 
   /* Team carousel — mobile */
-  .team-carousel-outer { padding: 12px 0 24px; }
+  .team-carousel-outer { padding: 20px 0; }
   .team-carousel .team-card {
     flex: 0 0 240px;
-    height: 400px;
+    height: 430px;
     padding: 28px 18px 22px;
+  }
+  .team-carousel .team-card .team-photo {
+    width: 120px;
+    height: 120px;
+  }
+  /* Always show "Ver perfil" on touch devices (no hover available) */
+  .team-card-cta {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
   }
   .team-modal {
     padding: 40px 24px 30px;
@@ -1444,7 +1512,7 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 
 
 .services-carousel-section {
-  padding: 20px 20px 60px;
+  padding: 20px 0 60px;
   display: flex;
   justify-content: center;
   align-items: center;

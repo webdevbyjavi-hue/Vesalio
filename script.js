@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     },
-    { threshold: 0.35, rootMargin: '-80px 0px -40% 0px' }
+    { threshold: 0.15, rootMargin: '-80px 0px -20% 0px' }
   );
   sections.forEach(s => navObserver.observe(s));
 
@@ -298,16 +298,21 @@ document.addEventListener('DOMContentLoaded', () => {
   function goTo(domIdx, animate) {
     if (busy && animate) return;
     busy = animate;
-    carousel.style.transition = animate
-      ? 'transform 460ms cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-      : 'none';
+    if (animate) {
+      carousel.style.willChange = 'transform';
+      carousel.style.transition = 'transform 460ms cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    } else {
+      carousel.style.willChange = 'auto';
+      carousel.style.transition = 'none';
+    }
     carousel.style.transform = `translateX(${calcTranslate(domIdx)}px)`;
     currentDOMIndex = domIdx;
     if (!animate) busy = false;
   }
 
-  // After each animated transition, silently reset if we landed on a clone
+  // After each animated transition, release will-change and reset clone zone
   carousel.addEventListener('transitionend', () => {
+    carousel.style.willChange = 'auto';
     busy = false;
     if (currentDOMIndex < n) {
       goTo(currentDOMIndex + n, false);   // pre-clone → corresponding original
@@ -349,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.gsap) {
     const obs = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
-        gsap.from(origCards, { opacity: 0, y: 24, duration: 0.55, stagger: 0.1, ease: 'power2.out' });
+        gsap.from(origCards, { opacity: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out' });
         obs.disconnect();
       }
     }, { threshold: 0.1 });
