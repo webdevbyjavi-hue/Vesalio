@@ -2,12 +2,6 @@
    VESALIO CLINIC — Landing Page Script
    ========================================================= */
 
-let isMobile = window.innerWidth < 768;
-
-window.addEventListener("resize", () => {
-  isMobile = window.innerWidth < 768;
-});
-
 document.addEventListener('DOMContentLoaded', () => {
 
   /* -----------------------------------------------------
@@ -99,22 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
   revealEls.forEach(el => revealObserver.observe(el));
 
   /* -----------------------------------------------------
-     Scale-from-center effect for grid cards on mobile
-     Uses IntersectionObserver so no getBoundingClientRect
-     on every scroll frame — zero forced layout cost.
-  ----------------------------------------------------- */
-  if (window.innerWidth <= 720 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const scaleCards = document.querySelectorAll('.services-grid .service-card');
-    const thresholds = Array.from({ length: 21 }, (_, i) => i / 20);
-    const scaleObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        entry.target.style.transform = `scale(${(0.80 + 0.25 * entry.intersectionRatio).toFixed(3)})`;
-      });
-    }, { threshold: thresholds });
-    scaleCards.forEach(card => scaleObserver.observe(card));
-  }
-
-  /* -----------------------------------------------------
      Count-up animation for the stat badge
   ----------------------------------------------------- */
   const counters = document.querySelectorAll('[data-target]');
@@ -144,42 +122,17 @@ document.addEventListener('DOMContentLoaded', () => {
   ----------------------------------------------------- */
   const heroBg = document.querySelector('.hero-bg');
   if (heroBg && window.innerWidth > 720) {
+    let parallaxPending = false;
     window.addEventListener('scroll', () => {
-      const y = window.scrollY;
-      if (y < 600) heroBg.style.transform = `translateY(${y * 0.25}px) scale(1.1)`;
+      if (parallaxPending) return;
+      parallaxPending = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (y < 600) heroBg.style.transform = `translateY(${y * 0.25}px) scale(1.1)`;
+        parallaxPending = false;
+      });
     }, { passive: true });
   }
-
-  /* -----------------------------------------------------
-     Service card ripple on click
-  ----------------------------------------------------- */
-  document.querySelectorAll('.service-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-      const rect = card.getBoundingClientRect();
-      const ripple = document.createElement('span');
-      ripple.className = 'ripple';
-      const size = Math.max(rect.width, rect.height);
-      ripple.style.cssText = `
-        position: absolute;
-        left: ${e.clientX - rect.left - size / 2}px;
-        top: ${e.clientY - rect.top - size / 2}px;
-        width: ${size}px;
-        height: ${size}px;
-        border-radius: 50%;
-        background: rgba(154,179,196, 0.25);
-        transform: scale(0);
-        pointer-events: none;
-        animation: rippleEffect 600ms ease-out forwards;
-      `;
-      card.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 650);
-    });
-  });
-
-  // Inject the ripple keyframes once
-  const styleEl = document.createElement('style');
-  styleEl.textContent = `@keyframes rippleEffect { to { transform: scale(2.5); opacity: 0; } }`;
-  document.head.appendChild(styleEl);
 
   /* -----------------------------------------------------
      Booking form — send via WhatsApp
@@ -187,19 +140,42 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('bookingForm');
   const status = document.getElementById('formStatus');
   const WA_NUMBER = '525548423467';
+  const SUBMIT_COOLDOWN = 30_000;
+  const SUBMIT_KEY = 'vesalio_last_submit';
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const name = form.name.value.trim();
-    const phone = form.phone.value.trim();
+    // Honeypot: real users leave this blank; bots fill it
+    if (form.website && form.website.value !== '') return;
+
+    // Rate limiting: one submission per 30 seconds
+    const lastSubmit = parseInt(localStorage.getItem(SUBMIT_KEY) || '0', 10);
+    const now = Date.now();
+    if (now - lastSubmit < SUBMIT_COOLDOWN) {
+      const wait = Math.ceil((SUBMIT_COOLDOWN - (now - lastSubmit)) / 1000);
+      status.textContent = `Espera ${wait} segundo${wait !== 1 ? 's' : ''} antes de enviar otro mensaje.`;
+      status.classList.remove('ok');
+      status.classList.add('err');
+      return;
+    }
+
+    const name    = form.name.value.trim().slice(0, 100);
+    const phone   = form.phone.value.trim().slice(0, 20);
     const service = form.service.value.trim();
-    const message = form.message.value.trim();
+    const message = form.message.value.trim().slice(0, 500);
 
     status.classList.remove('ok', 'err');
 
     if (!name || !phone || !service) {
       status.textContent = 'Por favor completa nombre, teléfono y servicio.';
+      status.classList.add('err');
+      return;
+    }
+
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length < 7 || digits.length > 15) {
+      status.textContent = 'Por favor ingresa un número de teléfono válido.';
       status.classList.add('err');
       return;
     }
@@ -213,12 +189,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
 
+    localStorage.setItem(SUBMIT_KEY, String(now));
     status.textContent = 'Abriendo WhatsApp con tu mensaje…';
     status.classList.add('ok');
 
     window.open(url, '_blank', 'noopener');
 
-    // Reset after a moment
     setTimeout(() => {
       form.reset();
       status.textContent = '';
@@ -507,10 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 (function () {
 
-  if (!window.gsap) {
-    console.warn("GSAP not loaded");
-    return;
-  }
+  if (!window.gsap) return;
 
   const services = [
     { name: "Ejercicio terapéutico personalizado", description: "Programas específicos que se adaptan a tu condición, objetivos y nivel de actividad.", icon: "fas fa-dumbbell" },

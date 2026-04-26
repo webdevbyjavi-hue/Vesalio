@@ -314,13 +314,17 @@
           <h3>Solicita tu cita</h3>
           <p class="form-lead">Déjanos tus datos y te contactamos por WhatsApp.</p>
 
+          <div class="field visually-hidden" aria-hidden="true">
+            <label for="website">Sitio web</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
           <div class="field">
             <label for="name">Nombre</label>
-            <input type="text" id="name" name="name" required placeholder="Tu nombre completo" />
+            <input type="text" id="name" name="name" required placeholder="Tu nombre completo" maxlength="100" autocomplete="name" />
           </div>
           <div class="field">
             <label for="phone">Teléfono</label>
-            <input type="tel" id="phone" name="phone" required placeholder="55 0000 0000" />
+            <input type="tel" id="phone" name="phone" required placeholder="55 0000 0000" maxlength="20" autocomplete="tel" inputmode="numeric" />
           </div>
           <div class="field">
             <label for="service">Servicio de interés</label>
@@ -341,7 +345,7 @@
           </div>
           <div class="field">
             <label for="message">Cuéntanos tu motivo</label>
-            <textarea id="message" name="message" rows="3" placeholder="Molestia, lesión o meta deportiva"></textarea>
+            <textarea id="message" name="message" rows="3" placeholder="Molestia, lesión o meta deportiva" maxlength="500"></textarea>
           </div>
           <button type="submit" class="btn btn-primary btn-full">
             <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
@@ -391,7 +395,7 @@
   <footer class="footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <img src="./assets/logo_vesalio.jpg" alt="Logo Vesalio Clinic" id="navLogoImg" class="nav-logo-img" loading="eager" width="36" height="36" />
+        <img src="./assets/logo_vesalio.jpg" alt="Logo Vesalio Clinic" class="nav-logo-img" loading="eager" width="36" height="36" />
         <h3>Vesalio Clinic</h3>
         <p>Fisioterapia deportiva y ortopedia.<br />Tu movimiento, nuestra pasión.</p>
       </div>
@@ -437,7 +441,6 @@
   </a>
 
 <script src="script.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 
 </body>
 </html>
