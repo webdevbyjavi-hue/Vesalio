@@ -357,23 +357,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const track = document.getElementById('galleryTrack');
   if (!track) return;
 
-  const RADIUS = 480;
+  const RADIUS = 620;
   const AUTO_SPEED = 0.018; // degrees per frame when idle
 
   const images = [
-    { src: './assets/athletes/IMG_2400.jpg',  label: 'Rendimiento deportivo' },
-    { src: './assets/athletes/IMG_9218.JPG',  label: 'Evaluación biomecánica' },
-    { src: './assets/athletes/IMG_1668.JPG',  label: 'Rehabilitación activa' },
-    { src: './assets/athletes/IMG_1643.JPG',  label: 'Punción seca' },
-    { src: './assets/athletes/IMG_1642.JPG',  label: 'Fisioterapia deportiva' },
-    { src: './assets/athletes/IMG_1751.JPG',  label: 'Recuperación muscular' },
-    { src: './assets/athletes/IMG_1831.JPG',  label: 'Trabajo funcional' },
-    { src: './assets/athletes/IMG_2445.JPG',  label: 'Triatlón y endurance' },
-    { src: './assets/athletes/IMG_2409.jpg',  label: 'Movilidad articular' },
-    { src: './assets/athletes/IMG_1855.JPG',  label: 'Terapia manual' },
-    { src: './assets/athletes/IMG_9205.JPG',  label: 'Carrera y biomecánica' },
-    { src: './assets/athletes/IMG_7833.JPG',  label: 'Optimización del movimiento' },
-    { src: './assets/athletes/IMG_1845.JPG',  label: 'Rendimiento personal' },
+    { src: './assets/athletes/IMG_2400.jpg',  label: 'Atleta #1' },
+    { src: './assets/athletes/IMG_9218.JPG',  label: 'Atleta #2' },
+    { src: './assets/athletes/IMG_1668.JPG',  label: 'Atleta #3' },
+    { src: './assets/athletes/IMG_1643.JPG',  label: 'Atleta #4' },
+    { src: './assets/athletes/IMG_1642.JPG',  label: 'Atleta #5' },
+    { src: './assets/athletes/IMG_1751.JPG',  label: 'Atleta #6' },
+    { src: './assets/athletes/IMG_1831.JPG',  label: 'Atleta #7' },
+    { src: './assets/athletes/IMG_2445.JPG',  label: 'Atleta #8' },
+    { src: './assets/athletes/IMG_2409.jpg',  label: 'Atleta #9' },
+    { src: './assets/athletes/IMG_1855.JPG',  label: 'Atleta #10' },
+    { src: './assets/athletes/IMG_9205.JPG',  label: 'Atleta #11' },
+    { src: './assets/athletes/IMG_7833.JPG',  label: 'Atleta #12' },
+    { src: './assets/athletes/IMG_1845.JPG',  label: 'Atleta #13' },
   ];
 
   const anglePerItem = 360 / images.length;
