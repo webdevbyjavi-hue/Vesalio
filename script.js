@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const track = document.getElementById('galleryTrack');
   if (!track) return;
 
-  const RADIUS = 620;
+  const RADIUS = 555;
   const AUTO_SPEED = 0.018; // degrees per frame when idle
 
   const images = [
@@ -542,128 +542,144 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 (function () {
-
   if (!window.gsap) return;
 
+  const ITEM_HEIGHT   = 65;
+  const AUTO_INTERVAL = 3000;
+
   const services = [
-    { name: "Ejercicio terapéutico personalizado", description: "Programas específicos que se adaptan a tu condición, objetivos y nivel de actividad.", icon: "fas fa-dumbbell" },
-    { name: "Evaluación de movimiento funcional", description: "Analizamos patrones de movimiento para detectar deficiencias y prevenir lesiones.", icon: "fas fa-person-running" },
-    { name: "Evaluación de técnica de carrera", description: "Biomecánica aplicada para corredores: cadencia y eficiencia.", icon: "fas fa-shoe-prints" },
-    { name: "Descarga muscular manual", description: "Terapia manual para liberar tensión y mejorar recuperación.", icon: "fas fa-hand-holding-medical" },
-    { name: "Presoterapia", description: "Activa la circulación y reduce fatiga muscular.", icon: "fas fa-wind" },
-    { name: "Electroterapia", description: "Corrientes para analgesia y desinflamación.", icon: "fas fa-wave-square" },
-    { name: "Electroestimulación", description: "Activación muscular para rehabilitación.", icon: "fas fa-bolt-lightning" },
-    { name: "Punción seca", description: "Liberación de puntos gatillo.", icon: "fas fa-syringe" },
-    { name: "Ventosas", description: "Estimula circulación y relaja tejidos.", icon: "fas fa-circle-notch" },
-    { name: "Vendaje multicapa", description: "Soporte funcional y estabilidad.", icon: "fas fa-bandage" }
+    { name: "Lesiones deportivas",    description: "Recuperación integral de lesiones en atletas y deportistas de todos los niveles.", icon: "fas fa-person-running",       image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1200" },
+    { name: "Rehab. ortopédica",      description: "Tratamiento de afecciones musculoesqueléticas con enfoque funcional.",            icon: "fas fa-bone",                  image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200" },
+    { name: "Ejercicio terapéutico",  description: "Programas de movimiento personalizados según tu condición y objetivos.",          icon: "fas fa-dumbbell",              image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1200" },
+    { name: "Fortalecimiento",        description: "Desarrollo de fuerza y estabilidad para un rendimiento óptimo y seguro.",         icon: "fas fa-hand-fist",             image: "https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?q=80&w=1200" },
+    { name: "Terapia manual",         description: "Técnicas manuales especializadas para aliviar el dolor y recuperar movilidad.",   icon: "fas fa-hands",                 image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200" },
+    { name: "Agentes físicos",        description: "Ultrasonido, electroterapia y otros agentes para acelerar la recuperación.",      icon: "fas fa-wave-square",           image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=1200" },
+    { name: "Punción seca",           description: "Liberación de puntos gatillo mediante agujas de acupuntura.",                     icon: "fas fa-syringe",               image: "https://images.unsplash.com/photo-1551288049-bbda38a10ad5?q=80&w=1200" },
+    { name: "Análisis biomecánico",   description: "Evaluación detallada de tu técnica y eficiencia al correr.",                     icon: "fas fa-shoe-prints",           image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200" },
+    { name: "Retorno al deporte",     description: "Protocolo progresivo para volver al deporte de forma segura y efectiva.",        icon: "fas fa-trophy",                image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1200" },
+    { name: "Descargas musculares",   description: "Liberación de la tensión muscular acumulada por el entrenamiento.",              icon: "fas fa-hand-holding-medical",  image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=1200" }
   ];
 
-  const carousel = document.getElementById("servicesCarousel");
-  if (!carousel) return;
+  const container      = document.getElementById('featureCarousel');
+  if (!container) return;
 
-  const wrapper = carousel.closest('.services-carousel-wrapper') || carousel.parentElement;
+  const labelsCenter   = document.getElementById('fcLabelsCenter');
+  const cardsContainer = document.getElementById('fcCardsContainer');
+  const total          = services.length;
 
-  let angle = 0;
-  const total = services.length;
-  const step = 360 / total;
+  let currentIndex = 0;
+  let isPaused     = false;
+  let autoTimer;
 
-  const cards = services.map(service => {
-    const div = document.createElement("div");
-    div.className = "services-carousel-card";
-    div.innerHTML = `<div class="card-inner"><i class="${service.icon}"></i><h3>${service.name}</h3><p>${service.description}</p></div>`;
-    carousel.appendChild(div);
-    return div;
-  });
-
-  // Pagination dots
-  const dotsEl = document.createElement('div');
-  dotsEl.className = 'carousel-dots';
-  const dots = services.map((_, i) => {
+  // ── Build label buttons ──────────────────────────────────────
+  const labelBtns = services.map((s, i) => {
     const btn = document.createElement('button');
-    btn.className = 'carousel-dot';
-    btn.setAttribute('aria-label', `Ir al servicio ${i + 1}`);
-    btn.addEventListener('click', () => jumpTo(i));
-    dotsEl.appendChild(btn);
+    btn.className = 'fc-label-btn';
+    btn.innerHTML = `<i class="${s.icon}" aria-hidden="true"></i><span>${s.name}</span>`;
+    btn.setAttribute('aria-label', s.name);
+    btn.addEventListener('click', () => goTo(i));
+    labelsCenter.appendChild(btn);
     return btn;
   });
-  carousel.after(dotsEl);
 
-  function getActiveIndex() {
-    return Math.round((-angle / step) % total + total) % total;
-  }
+  gsap.set(labelBtns, { xPercent: -50, yPercent: -50 });
 
-  function position() {
-    const mobile = window.innerWidth < 768;
-    const SPREAD = mobile ? 220 : 295;
-    const activeIndex = getActiveIndex();
-
-    cards.forEach((card, i) => {
-      let offset = (i - activeIndex + total) % total;
-      if (offset > total / 2) offset -= total;
-      const abs = Math.abs(offset);
-
-      gsap.to(card, {
-        xPercent: -50,
-        yPercent: -50,
-        x: offset * SPREAD,
-        y: 0,
-        z: 0,
-        rotationY: 0,
-        scale: abs === 0 ? 1 : Math.max(0.62, 1 - abs * 0.13),
-        opacity: abs === 0 ? 1 : abs === 1 ? 0.72 : abs === 2 ? 0.28 : 0,
-        filter: 'none',
-        zIndex: total - abs,
-        duration: 0.65,
-        ease: 'expo.out'
-      });
-    });
-
-    dots.forEach((dot, i) => dot.classList.toggle('active', i === activeIndex));
-  }
-
-  function jumpTo(idx) {
-    const active = getActiveIndex();
-    let delta = idx - active;
-    if (delta > total / 2) delta -= total;
-    if (delta < -total / 2) delta += total;
-    angle -= delta * step;
-    position();
-  }
-
-  function next() { angle -= step; position(); }
-  function prev() { angle += step; position(); }
-
-  document.getElementById("serviceNext")?.addEventListener("click", next);
-  document.getElementById("servicePrev")?.addEventListener("click", prev);
-
-  // Click a non-active card to navigate to it
-  carousel.addEventListener('click', e => {
-    const card = e.target.closest('.services-carousel-card');
-    if (!card) return;
-    const idx = cards.indexOf(card);
-    if (idx !== -1 && idx !== getActiveIndex()) jumpTo(idx);
+  // ── Build image cards ────────────────────────────────────────
+  const cardEls = services.map((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'fc-card';
+    card.innerHTML = `
+      <img src="${s.image}" alt="${s.name}" loading="${i === 0 ? 'eager' : 'lazy'}" />
+      <div class="fc-card-overlay">
+        <div class="fc-card-badge">${i + 1} · ${s.name}</div>
+        <p class="fc-card-desc">${s.description}</p>
+      </div>`;
+    cardsContainer.appendChild(card);
+    return card;
   });
 
-  // Auto-advance, paused on hover
-  let autoTimer = setInterval(next, 3500);
-  wrapper.addEventListener('mouseenter', () => clearInterval(autoTimer));
-  wrapper.addEventListener('mouseleave', () => { autoTimer = setInterval(next, 3500); });
+  // ── Helpers ──────────────────────────────────────────────────
+  function wrapIdx(v) { return ((v % total) + total) % total; }
 
-  // Touch swipe (horizontal only)
-  let touchStartX = 0, touchStartY = 0;
-  carousel.addEventListener("touchstart", e => {
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-  }, { passive: true });
-  carousel.addEventListener("touchend", e => {
+  function goTo(index) {
+    currentIndex = wrapIdx(index);
+    render();
+  }
+
+  // ── Render ───────────────────────────────────────────────────
+  function render() {
+    labelBtns.forEach((btn, i) => {
+      const dist = i - currentIndex;
+      let wd = dist;
+      if (dist >  total / 2) wd -= total;
+      if (dist < -total / 2) wd += total;
+
+      gsap.to(btn, {
+        xPercent: -50, yPercent: -50,
+        y:        wd * ITEM_HEIGHT,
+        opacity:  Math.max(0, 1 - Math.abs(wd) * 0.25),
+        duration: 0.55,
+        ease:     'back.out(1.4)'
+      });
+      btn.classList.toggle('active', i === currentIndex);
+    });
+
+    cardEls.forEach((card, i) => {
+      const diff = i - currentIndex;
+      let nd = diff;
+      if (nd >  total / 2) nd -= total;
+      if (nd < -total / 2) nd += total;
+
+      const isActive = nd === 0;
+      const isPrev   = nd === -1;
+      const isNext   = nd ===  1;
+
+      gsap.to(card, {
+        x:        isActive ? 0 : isPrev ? -110 : isNext ? 110 : 0,
+        scale:    isActive ? 1 : (isPrev || isNext) ? 0.85 : 0.7,
+        opacity:  isActive ? 1 : (isPrev || isNext) ? 0.4  : 0,
+        rotation: isPrev ? -3 : isNext ? 3 : 0,
+        zIndex:   isActive ? 20 : (isPrev || isNext) ? 10 : 0,
+        duration: 0.55,
+        ease:     'back.out(1.2)'
+      });
+
+      const img = card.querySelector('img');
+      if (img) gsap.to(img, {
+        filter:   isActive
+          ? 'grayscale(0%) blur(0px) brightness(100%)'
+          : 'grayscale(100%) blur(2px) brightness(70%)',
+        duration: 0.55,
+        ease:     'power2.out'
+      });
+
+      const overlay = card.querySelector('.fc-card-overlay');
+      if (overlay) gsap.to(overlay, {
+        opacity:  isActive ? 1 : 0,
+        y:        isActive ? 0 : 16,
+        duration: 0.4,
+        ease:     'power2.out'
+      });
+    });
+  }
+
+  // ── Auto-play ────────────────────────────────────────────────
+  function startAuto() {
+    clearInterval(autoTimer);
+    autoTimer = setInterval(() => { if (!isPaused) goTo(currentIndex + 1); }, AUTO_INTERVAL);
+  }
+
+  container.addEventListener('mouseenter', () => { isPaused = true;  });
+  container.addEventListener('mouseleave', () => { isPaused = false; });
+
+  // ── Touch swipe ──────────────────────────────────────────────
+  let touchStartX = 0;
+  container.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  container.addEventListener('touchend',   e => {
     const dx = e.changedTouches[0].clientX - touchStartX;
-    const dy = e.changedTouches[0].clientY - touchStartY;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-      dx < 0 ? next() : prev();
-    }
+    if (Math.abs(dx) > 40) goTo(currentIndex + (dx < 0 ? 1 : -1));
   }, { passive: true });
 
-  window.addEventListener("resize", position, { passive: true });
-  position();
-
-})();
+  render();
+  startAuto();
+}());

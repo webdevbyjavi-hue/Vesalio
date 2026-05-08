@@ -122,19 +122,19 @@
         </div>
 
         <section class="services-carousel-section">
-          <div class="services-carousel-wrapper">
-
-            <div class="services-carousel" id="servicesCarousel"></div>
-
-            <div class="services-carousel-controls">
-              <button id="servicePrev">←</button>
-              <button id="serviceNext">→</button>
+          <div class="fc-carousel" id="featureCarousel">
+            <div class="fc-left">
+              <div class="fc-fade-top"></div>
+              <div class="fc-labels-center" id="fcLabelsCenter"></div>
+              <div class="fc-fade-bottom"></div>
             </div>
-
+            <div class="fc-right">
+              <div class="fc-cards-container" id="fcCardsContainer"></div>
+            </div>
           </div>
         </section>
 
-        <div class="services-feature reveal">
+        <!-- <div class="services-feature reveal">
           <img src="./assets/location_image.jpeg" alt="Sesión de punción seca" loading="lazy" width="600" height="400" />
           <div class="services-feature-content">
             <h3>Tratamientos basados en evidencia</h3>
@@ -144,7 +144,7 @@
             </p>
             <a href="#contacto" class="btn btn-primary"><i class="fab fa-whatsapp"></i> Reservar una sesión</a>
           </div>
-        </div>
+        </div> -->
       </div>
     </section>
 
@@ -181,7 +181,6 @@
                 <h2 class="tpc-name" id="tpcName">Íñigo Salazar</h2>
                 <span class="tpc-role" id="tpcRole">Fisioterapeuta deportivo</span>
                 <p class="tpc-desc" id="tpcDesc">Especializado en deporte y evaluación de movimiento funcional. Triatleta de medias y largas distancias, apasionado del rendimiento humano.</p>
-                </div>
               </div>
             </div>
           </div>
@@ -260,17 +259,16 @@
             <label for="service">Servicio de interés</label>
             <select id="service" name="service" required>
               <option value="">Selecciona un servicio</option>
-              <option>Ejercicio terapéutico personalizado</option>
-              <option>Evaluación de movimiento funcional</option>
-              <option>Evaluación de técnica de carrera</option>
-              <option>Descarga muscular manual</option>
-              <option>Presoterapia</option>
-              <option>Electroterapia</option>
-              <option>Electroestimulación</option>
+              <option>Rehabilitación de lesiones deportivas</option>
+              <option>Rehabilitación ortopédica</option>
+              <option>Ejercicio terapéutico</option>
+              <option>Fortalecimiento</option>
+              <option>Terapia manual</option>
+              <option>Agentes físicos</option>
               <option>Punción seca</option>
-              <option>Ventosas</option>
-              <option>Vendaje multicapa</option>
-              <option>Psicoterapia</option>
+              <option>Análisis biomecánico de carrera</option>
+              <option>Readaptación y retorno al deporte</option>
+              <option>Descargas musculares</option>
             </select>
           </div>
           <div class="field">
