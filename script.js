@@ -221,172 +221,232 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================================================
-   TEAM CAROUSEL — transform-based infinite loop
-   Track slides via translateX; active card is always
-   mathematically centered in the outer container.
-   DOM after cloning:
-     [pre_0..pre_n-1] [orig_0..orig_n-1] [post_0..post_n-1]
-   On transitionend, silently reset from clone zone → original.
+   TEAM PROFILE CAROUSEL — fade-based single-member view
+   Large photo block (left) + overlapping card (right).
+   On mobile: stacked vertically. Prev/next + dots nav.
    ========================================================= */
-(function initTeamCarousel() {
-  const outer   = document.querySelector('.team-carousel-outer');
-  const carousel = document.getElementById('teamCarousel');
-  const prevBtn  = document.getElementById('teamPrev');
-  const nextBtn  = document.getElementById('teamNext');
-  if (!carousel || !outer) return;
+(function initTeamProfileCarousel() {
+  const members = [
+    {
+      name: "Íñigo Salazar",
+      role: "Fisioterapeuta deportivo",
+      description: "Especializado en deporte y evaluación de movimiento funcional. Triatleta de medias y largas distancias, apasionado del rendimiento humano.",
+      photo: "./assets/inigo.png",
+    },
+    {
+      name: "Ana Cristina Suárez",
+      role: "Ortopedia & Oncología",
+      description: "Especialista en ortopedia y secuelas oncológicas, vasculares y linfáticas. Triatleta de cortas distancias, comprometida con cada paciente.",
+      photo: "./assets/ana.png",
+    },
+    {
+      name: "Irina Segura",
+      role: "Biomecánica de carrera",
+      description: "Especialista en ortopedia, deporte y biomecánica de carrera. Triatleta de cortas y medianas distancias, nadadora de aguas abiertas.",
+      photo: "./assets/irina.png",
+    },
+    {
+      name: "Gabriela Mejía",
+      role: "Punción seca",
+      description: "Especialista en punción seca y liberación de puntos gatillo. Apasionada de la filigrana y el salto de cuerda.",
+      photo: "./assets/gaby.png",
+    },
+    {
+      name: "Florencia Rosso",
+      role: "Psicoterapia",
+      description: "Psicoterapeuta psicoanalítica especialista en niños, adolescentes, TCA's, obesidad y College Counseling. Foodie y fanática de viajar.",
+      photo: "./assets/florencia.png",
+    },
+  ];
 
-  const origCards = [...carousel.querySelectorAll('.team-card')];
-  const n = origCards.length;
+  const photoBlock = document.querySelector('.tpc-photo-block');
+  const cardBlock  = document.querySelector('.tpc-card-block');
+  const imgEl      = document.getElementById('tpcImg');
+  const nameEl     = document.getElementById('tpcName');
+  const roleEl     = document.getElementById('tpcRole');
+  const descEl     = document.getElementById('tpcDesc');
+  const dotsWrap   = document.getElementById('tpcDots');
+  const prevBtn    = document.getElementById('tpcPrev');
+  const nextBtn    = document.getElementById('tpcNext');
+  if (!photoBlock || !imgEl) return;
 
-  // Build pre-clones (reversed prepend → reads [clone_0…clone_n-1] in DOM)
-  [...origCards].reverse().forEach(card => {
-    const clone = card.cloneNode(true);
-    clone.setAttribute('aria-hidden', 'true');
-    clone.setAttribute('tabindex', '-1');
-    carousel.prepend(clone);
-  });
-  // Build post-clones (normal order)
-  origCards.forEach(card => {
-    const clone = card.cloneNode(true);
-    clone.setAttribute('aria-hidden', 'true');
-    clone.setAttribute('tabindex', '-1');
-    carousel.appendChild(clone);
-  });
+  let current = 0;
+  let busy    = false;
 
-  // Helpers
-  function cardStep() {
-    const firstCard = carousel.querySelector('.team-card');
-    const gap = parseFloat(getComputedStyle(carousel).gap) || 20;
-    return firstCard ? firstCard.offsetWidth + gap : 300;
-  }
-
-  // translateX that perfectly centers DOM card domIdx in the outer container
-  function calcTranslate(domIdx) {
-    const step     = cardStep();
-    const cardW    = step - (parseFloat(getComputedStyle(carousel).gap) || 20);
-    const outerW   = outer.clientWidth;
-    return outerW / 2 - domIdx * step - cardW / 2;
-  }
-
-  let currentDOMIndex = n; // start at first original
-  let busy = false;
-
-  function goTo(domIdx, animate) {
-    if (busy && animate) return;
-    busy = animate;
-    if (animate) {
-      carousel.style.willChange = 'transform';
-      carousel.style.transition = 'transform 460ms cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    } else {
-      carousel.style.willChange = 'auto';
-      carousel.style.transition = 'none';
-    }
-    carousel.style.transform = `translateX(${calcTranslate(domIdx)}px)`;
-    currentDOMIndex = domIdx;
-    if (!animate) busy = false;
-  }
-
-  // After each animated transition, release will-change and reset clone zone
-  carousel.addEventListener('transitionend', () => {
-    carousel.style.willChange = 'auto';
-    busy = false;
-    if (currentDOMIndex < n) {
-      goTo(currentDOMIndex + n, false);   // pre-clone → corresponding original
-    } else if (currentDOMIndex >= 2 * n) {
-      goTo(currentDOMIndex - n, false);   // post-clone → corresponding original
-    }
+  const dots = members.map((m, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'tpc-dot';
+    btn.setAttribute('aria-label', `Ver perfil de ${m.name}`);
+    btn.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(btn);
+    return btn;
   });
 
-  // Init position (needs layout to be complete)
-  requestAnimationFrame(() => requestAnimationFrame(() => goTo(n, false)));
+  function render(m) {
+    imgEl.src          = m.photo;
+    imgEl.alt          = m.name;
+    nameEl.textContent = m.name;
+    roleEl.textContent = m.role;
+    descEl.textContent = m.description;
+  }
 
-  // Recalculate on resize
-  window.addEventListener('resize', () => goTo(currentDOMIndex, false), { passive: true });
+  function syncDots() {
+    dots.forEach((d, i) => d.classList.toggle('is-active', i === current));
+  }
 
-  // Buttons
-  if (prevBtn) { prevBtn.disabled = false; prevBtn.addEventListener('click', () => goTo(currentDOMIndex - 1, true)); }
-  if (nextBtn) { nextBtn.disabled = false; nextBtn.addEventListener('click', () => goTo(currentDOMIndex + 1, true)); }
+  function goTo(index) {
+    const next = ((index % members.length) + members.length) % members.length;
+    if (next === current || busy) return;
+    busy = true;
+
+    gsap.to([photoBlock, cardBlock], {
+      opacity: 0,
+      duration: 0.14,
+      ease: 'power1.out',
+      onComplete() {
+        current = next;
+        render(members[current]);
+        syncDots();
+        gsap.to(photoBlock, { opacity: 1, duration: 0.22, ease: 'power2.out' });
+        gsap.fromTo(cardBlock,
+          { opacity: 0, y: -10 },
+          { opacity: 1, y: 0, duration: 0.28, ease: 'power2.out',
+            onComplete() { busy = false; } }
+        );
+      }
+    });
+  }
 
   // Touch swipe
-  let touchX = 0;
-  outer.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
-  outer.addEventListener('touchend', e => {
-    const dx = touchX - e.changedTouches[0].clientX;
-    if (Math.abs(dx) > 50) goTo(currentDOMIndex + (dx > 0 ? 1 : -1), true);
-  }, { passive: true });
+  let touchStartX = 0;
+  const wrap = document.querySelector('.tpc-wrap');
+  if (wrap) {
+    wrap.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    wrap.addEventListener('touchend', e => {
+      const dx = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(dx) > 50) goTo(current + (dx > 0 ? 1 : -1));
+    }, { passive: true });
+  }
 
-  // 3D tilt on all cards (originals + clones)
-  carousel.querySelectorAll('.team-card').forEach(card => {
-    card.addEventListener('mousemove', e => {
-      const r = card.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - 0.5;
-      const y = (e.clientY - r.top) / r.height - 0.5;
-      card.style.transform = `translateY(-10px) perspective(900px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg)`;
-    });
-    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
-  });
+  prevBtn?.addEventListener('click', () => goTo(current - 1));
+  nextBtn?.addEventListener('click', () => goTo(current + 1));
 
-  // GSAP staggered entry (original cards only)
-  if (window.gsap) {
+  // GSAP entrance animation
+  if (window.gsap && wrap) {
     const obs = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
-        gsap.from(origCards, { opacity: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out' });
+        gsap.from('.tpc-photo-block', { opacity: 0, x: -30, duration: 0.7, ease: 'power2.out' });
+        gsap.from('.tpc-card-block',  { opacity: 0, x: 30,  duration: 0.7, ease: 'power2.out', delay: 0.15 });
         obs.disconnect();
       }
-    }, { threshold: 0.1 });
-    obs.observe(outer);
+    }, { threshold: 0.2 });
+    obs.observe(wrap);
   }
+
+  render(members[0]);
+  syncDots();
 })();
+
 
 /* =========================================================
-   TEAM MODAL — event delegation (works for clones too)
+   CIRCULAR GALLERY — vanilla JS port of CircularGallery component
+   Images spin in a 3D carousel driven by scroll progress within
+   the section. Auto-rotates at low speed when not scrolling.
    ========================================================= */
-(function initTeamModal() {
-  const overlay  = document.getElementById('teamModalOverlay');
-  const carousel = document.getElementById('teamCarousel');
-  if (!overlay || !carousel) return;
+(function initCircularGallery() {
+  const track = document.getElementById('galleryTrack');
+  if (!track) return;
 
-  const closeBtn     = document.getElementById('teamModalClose');
-  const modalImg     = document.getElementById('teamModalImg');
-  const modalRole    = document.getElementById('teamModalRole');
-  const modalName    = document.getElementById('teamModalName');
-  const modalBullets = document.getElementById('teamModalBullets');
+  const RADIUS = 480;
+  const AUTO_SPEED = 0.018; // degrees per frame when idle
 
-  function openModal(card) {
-    const img = card.querySelector('.team-photo img');
-    modalImg.src = img.src;
-    modalImg.alt = img.alt;
-    modalName.textContent  = card.querySelector('h3').textContent;
-    modalRole.textContent  = card.querySelector('.team-role').textContent;
-    modalBullets.innerHTML = [...card.querySelectorAll('.team-bullets li')]
-      .map(li => `<li>${li.textContent.trim()}</li>`).join('');
-    overlay.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
-    if (closeBtn) closeBtn.focus();
+  const images = [
+    { src: './assets/athletes/IMG_2400.jpg',  label: 'Rendimiento deportivo' },
+    { src: './assets/athletes/IMG_9218.JPG',  label: 'Evaluación biomecánica' },
+    { src: './assets/athletes/IMG_1668.JPG',  label: 'Rehabilitación activa' },
+    { src: './assets/athletes/IMG_1643.JPG',  label: 'Punción seca' },
+    { src: './assets/athletes/IMG_1642.JPG',  label: 'Fisioterapia deportiva' },
+    { src: './assets/athletes/IMG_1751.JPG',  label: 'Recuperación muscular' },
+    { src: './assets/athletes/IMG_1831.JPG',  label: 'Trabajo funcional' },
+    { src: './assets/athletes/IMG_2445.JPG',  label: 'Triatlón y endurance' },
+    { src: './assets/athletes/IMG_2409.jpg',  label: 'Movilidad articular' },
+    { src: './assets/athletes/IMG_1855.JPG',  label: 'Terapia manual' },
+    { src: './assets/athletes/IMG_9205.JPG',  label: 'Carrera y biomecánica' },
+    { src: './assets/athletes/IMG_7833.JPG',  label: 'Optimización del movimiento' },
+    { src: './assets/athletes/IMG_1845.JPG',  label: 'Rendimiento personal' },
+  ];
+
+  const anglePerItem = 360 / images.length;
+
+  // Build gallery cards
+  images.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'gallery-card';
+    card.setAttribute('aria-label', item.label);
+    card.style.transform = `rotateY(${i * anglePerItem}deg) translateZ(${RADIUS}px)`;
+
+    const img = document.createElement('img');
+    img.src     = item.src;
+    img.alt     = item.label;
+    img.loading = 'lazy';
+
+    const label = document.createElement('div');
+    label.className   = 'gallery-card-label';
+    label.textContent = item.label;
+
+    card.appendChild(img);
+    card.appendChild(label);
+    track.appendChild(card);
+  });
+
+  const section = document.getElementById('galeria');
+  let rotation   = 0;
+  let isScrolling = false;
+  let scrollTimer = null;
+  let rafId       = null;
+
+  function applyRotation(deg) {
+    track.style.transform = `rotateY(${deg}deg)`;
+
+    // Update per-card opacity: cards facing away are dimmer
+    const cards = track.querySelectorAll('.gallery-card');
+    cards.forEach((card, i) => {
+      const itemAngle     = i * anglePerItem;
+      const totalRot      = deg % 360;
+      const relative      = ((itemAngle + totalRot) % 360 + 360) % 360;
+      const normalized    = relative > 180 ? 360 - relative : relative;
+      card.style.opacity  = Math.max(0.25, 1 - normalized / 180);
+    });
   }
 
-  function closeModal() {
-    overlay.classList.remove('is-open');
-    document.body.style.overflow = '';
+  // Scroll-driven rotation: maps scroll progress within section → 0–360°
+  function onScroll() {
+    if (!section) return;
+    const rect          = section.getBoundingClientRect();
+    const sectionH      = section.offsetHeight - window.innerHeight;
+    const scrolled      = -rect.top;
+    if (scrolled < 0 || scrolled > sectionH) return;
+
+    rotation = (scrolled / sectionH) * 360;
+    applyRotation(rotation);
+
+    isScrolling = true;
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => { isScrolling = false; }, 150);
   }
 
-  carousel.addEventListener('click', e => {
-    const card = e.target.closest('.team-card');
-    if (card) openModal(card);
-  });
-  carousel.addEventListener('keydown', e => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const card = e.target.closest('.team-card');
-    if (card) { e.preventDefault(); openModal(card); }
-  });
+  window.addEventListener('scroll', onScroll, { passive: true });
 
-  if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeModal();
-  });
+  // Auto-rotate when user isn't scrolling
+  function tick() {
+    if (!isScrolling) {
+      rotation += AUTO_SPEED;
+      applyRotation(rotation);
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+  rafId = requestAnimationFrame(tick);
 })();
-
 
 // ── Flying Logo ──────────────────────────────────────────────────────────────
 (function () {

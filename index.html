@@ -15,8 +15,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <!-- GSAP -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  
-  <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
@@ -35,6 +34,7 @@
         <a href="#inicio" class="nav-link active">Inicio</a>
         <a href="#nosotros" class="nav-link">Nosotros</a>
         <a href="#servicios" class="nav-link">Servicios</a>
+        <a href="#galeria" class="nav-link">Galería</a>
         <a href="#equipo" class="nav-link">Equipo</a>
         <a href="#ubicacion" class="nav-link">Ubicación</a>
         <a href="#contacto" class="nav-link cta-link" role="button">Agenda tu cita</a>
@@ -148,6 +148,20 @@
       </div>
     </section>
 
+    <!-- ===================== GALERÍA ===================== -->
+    <section class="gallery-section" id="galeria">
+      <div class="gallery-sticky">
+        <div class="gallery-header container">
+          <span class="section-eyebrow">Galería</span>
+          <h2 class="section-title">Unete a la Comunidad <span class="accent">Vesalio</span></h2>
+        </div>
+        <div class="gallery-3d">
+          <div class="gallery-track" id="galleryTrack"></div>
+        </div>
+        <p class="gallery-hint"><i class="fas fa-mouse"></i> Desplázate para girar</p>
+      </div>
+    </section>
+
     <!-- ===================== EQUIPO ===================== -->
     <section class="team" id="equipo">
       <div class="container">
@@ -157,113 +171,29 @@
           <p class="section-lead">Profesionales apasionados del deporte, comprometidos con tu recuperación.</p>
         </div>
 
-        <div class="team-carousel-outer">
-          <div class="team-carousel" id="teamCarousel">
-
-            <article class="team-card" tabindex="0">
-              <div class="team-photo">
-                <img src="./assets/inigo.png" alt="Íñigo Salazar" loading="lazy" width="200" height="200" />
+        <div class="tpc-wrap">
+          <div class="tpc-inner">
+            <div class="tpc-photo-block">
+              <img class="tpc-img" id="tpcImg" src="./assets/inigo.png" alt="Íñigo Salazar" loading="lazy" />
+            </div>
+            <div class="tpc-card-block">
+              <div class="tpc-card">
+                <h2 class="tpc-name" id="tpcName">Íñigo Salazar</h2>
+                <span class="tpc-role" id="tpcRole">Fisioterapeuta deportivo</span>
+                <p class="tpc-desc" id="tpcDesc">Especializado en deporte y evaluación de movimiento funcional. Triatleta de medias y largas distancias, apasionado del rendimiento humano.</p>
+                </div>
               </div>
-              <div class="team-info">
-                <h3>Íñigo Salazar</h3>
-                <span class="team-role">Fisioterapeuta deportivo</span>
-                <ul class="team-bullets">
-                  <li>Especializado en deporte y evaluación de movimiento funcional.</li>
-                  <li>Triatleta de medias y largas distancias.</li>
-                </ul>
-              </div>
-              <span class="team-card-cta">Ver perfil <i class="fas fa-arrow-right"></i></span>
-            </article>
-
-            <article class="team-card" tabindex="0">
-              <div class="team-photo">
-                <img src="./assets/ana.png" alt="Ana Cristina Suárez" loading="lazy" width="200" height="200" />
-              </div>
-              <div class="team-info">
-                <h3>Ana Cristina Suárez</h3>
-                <span class="team-role">Ortopedia &amp; oncología</span>
-                <ul class="team-bullets">
-                  <li>Especialista en ortopedia y secuelas oncológicas, vasculares y linfáticas.</li>
-                  <li>Triatleta de cortas distancias.</li>
-                </ul>
-              </div>
-              <span class="team-card-cta">Ver perfil <i class="fas fa-arrow-right"></i></span>
-            </article>
-
-            <article class="team-card" tabindex="0">
-              <div class="team-photo">
-                <img src="./assets/irina.png" alt="Irina Segura" loading="lazy" width="200" height="200" />
-              </div>
-              <div class="team-info">
-                <h3>Irina Segura</h3>
-                <span class="team-role">Biomecánica de carrera</span>
-                <ul class="team-bullets">
-                  <li>Especialista en ortopedia, deporte y biomecánica de carrera.</li>
-                  <li>Triatleta de cortas y medianas distancias, nadadora de aguas abiertas.</li>
-                </ul>
-              </div>
-              <span class="team-card-cta">Ver perfil <i class="fas fa-arrow-right"></i></span>
-            </article>
-
-            <article class="team-card" tabindex="0">
-              <div class="team-photo">
-                <img src="./assets/gaby.png" alt="Gabriela Mejía" loading="lazy" width="200" height="200" />
-              </div>
-              <div class="team-info">
-                <h3>Gabriela Mejía</h3>
-                <span class="team-role">Punción seca</span>
-                <ul class="team-bullets">
-                  <li>Especialista en punción seca.</li>
-                  <li>Apasionada de la filigrana y el salto de cuerda.</li>
-                </ul>
-              </div>
-              <span class="team-card-cta">Ver perfil <i class="fas fa-arrow-right"></i></span>
-            </article>
-
-            <article class="team-card" tabindex="0">
-              <div class="team-photo">
-                <img src="./assets/florencia.png" alt="Florencia Rosso" loading="lazy" width="200" height="200" />
-              </div>
-              <div class="team-info">
-                <h3>Florencia Rosso</h3>
-                <span class="team-role">Psicoterapia</span>
-                <ul class="team-bullets">
-                  <li>Psicoterapeuta psicoanalítica.</li>
-                  <li>Especialista en niños, adolescentes, TCA's, obesidad y College Counseling.</li>
-                  <li>Foodie y fanática de viajar.</li>
-                </ul>
-              </div>
-              <span class="team-card-cta">Ver perfil <i class="fas fa-arrow-right"></i></span>
-            </article>
-
+            </div>
           </div>
 
-        </div>
-      </div>
-
-      <div class="team-carousel-controls">
-        <button class="team-carousel-btn" id="teamPrev" aria-label="Anterior">
-          <i class="fas fa-arrow-left"></i>
-        </button>
-        <button class="team-carousel-btn" id="teamNext" aria-label="Siguiente">
-          <i class="fas fa-arrow-right"></i>
-        </button>
-      </div>
-
-      <!-- Team member modal -->
-      <div class="team-modal-overlay" id="teamModalOverlay" role="dialog" aria-modal="true" aria-labelledby="teamModalName">
-        <div class="team-modal">
-          <button class="team-modal-close" id="teamModalClose" aria-label="Cerrar perfil">
-            <i class="fas fa-xmark"></i>
-          </button>
-          <div class="team-modal-photo">
-            <img id="teamModalImg" src="" alt="" />
-          </div>
-          <div class="team-modal-body">
-            <p class="team-modal-role" id="teamModalRole"></p>
-            <h3 id="teamModalName"></h3>
-            <div class="team-modal-divider"></div>
-            <ul class="team-modal-bullets" id="teamModalBullets"></ul>
+          <div class="tpc-nav">
+            <button class="tpc-btn" id="tpcPrev" aria-label="Miembro anterior">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="tpc-dots" id="tpcDots"></div>
+            <button class="tpc-btn" id="tpcNext" aria-label="Siguiente miembro">
+              <i class="fas fa-chevron-right"></i>
+            </button>
           </div>
         </div>
       </div>
