@@ -118,20 +118,87 @@ document.addEventListener('DOMContentLoaded', () => {
   counters.forEach(c => counterObserver.observe(c));
 
   /* -----------------------------------------------------
-     Parallax hero background
+     Hero scroll effects: bg parallax + content fade-exit
   ----------------------------------------------------- */
-  const heroBg = document.querySelector('.hero-bg');
-  if (heroBg && window.innerWidth > 720) {
-    let parallaxPending = false;
-    window.addEventListener('scroll', () => {
-      if (parallaxPending) return;
-      parallaxPending = true;
-      requestAnimationFrame(() => {
-        const y = window.scrollY;
-        if (y < 600) heroBg.style.transform = `translateY(${y * 0.25}px) scale(1.1)`;
-        parallaxPending = false;
-      });
-    }, { passive: true });
+  const heroBg       = document.querySelector('.hero-bg');
+  const heroContent  = document.querySelector('.hero-content');
+  const heroSect     = document.getElementById('inicio');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let heroScrollPending = false;
+
+  function updateHeroOnScroll() {
+    heroScrollPending = false;
+    const y     = window.scrollY;
+    const heroH = heroSect ? heroSect.offsetHeight : window.innerHeight;
+
+    if (heroBg && window.innerWidth > 720 && !prefersReduced.matches) {
+      if (y < 600) heroBg.style.transform = `translateY(${y * 0.25}px) scale(1.1)`;
+    }
+
+    if (heroContent && !prefersReduced.matches) {
+      const fadeStart = heroH * 0.20;
+      const fadeEnd   = heroH * 0.60;
+      if (y <= fadeStart) {
+        heroContent.style.opacity   = '1';
+        heroContent.style.transform = '';
+      } else if (y >= fadeEnd) {
+        heroContent.style.opacity   = '0';
+        heroContent.style.transform = 'translateY(-20px)';
+      } else {
+        const p     = (y - fadeStart) / (fadeEnd - fadeStart);
+        const eased = p * p;
+        heroContent.style.opacity   = String(1 - eased);
+        heroContent.style.transform = `translateY(${-20 * eased}px)`;
+      }
+    }
+  }
+
+  window.addEventListener('scroll', () => {
+    if (heroScrollPending) return;
+    heroScrollPending = true;
+    requestAnimationFrame(updateHeroOnScroll);
+  }, { passive: true });
+
+  /* -----------------------------------------------------
+     Hero mouse-move parallax — desktop only
+  ----------------------------------------------------- */
+  if (window.innerWidth > 768) {
+    const heroEl = document.getElementById('inicio');
+    let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
+    let mouseRafId = null, isMouseOver = false;
+
+    function lerpMouseParallax() {
+      const speed = 0.08;
+      currentX += (targetX - currentX) * speed;
+      currentY += (targetY - currentY) * speed;
+
+      const settled = !isMouseOver && Math.abs(currentX) < 0.05 && Math.abs(currentY) < 0.05;
+      if (settled) { mouseRafId = null; return; }
+
+      const y     = window.scrollY;
+      const heroH = heroSect ? heroSect.offsetHeight : window.innerHeight;
+      if (heroContent && y < heroH * 0.20) {
+        heroContent.style.transform = `translate(${currentX}px, ${currentY}px)`;
+      }
+      mouseRafId = requestAnimationFrame(lerpMouseParallax);
+    }
+
+    heroEl.addEventListener('mousemove', (e) => {
+      if (prefersReduced.matches) return;
+      isMouseOver = true;
+      const rect  = heroEl.getBoundingClientRect();
+      const normX = (e.clientX - rect.left)  / rect.width  - 0.5;
+      const normY = (e.clientY - rect.top)   / rect.height - 0.5;
+      targetX = -normX * 24;
+      targetY = -normY * 16;
+      if (!mouseRafId) mouseRafId = requestAnimationFrame(lerpMouseParallax);
+    });
+
+    heroEl.addEventListener('mouseleave', () => {
+      isMouseOver = false;
+      targetX = 0; targetY = 0;
+      if (!mouseRafId) mouseRafId = requestAnimationFrame(lerpMouseParallax);
+    });
   }
 
   /* -----------------------------------------------------
