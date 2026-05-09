@@ -563,6 +563,33 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 .gallery-header .section-title   { color: #fff; }
 .gallery-header .section-title .accent { color: var(--vesalio-mist); }
 
+.gallery-instagram-link {
+  position: absolute;
+  bottom: clamp(52px, 9vh, 80px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 1.5rem;
+  text-decoration: none;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.25);
+  z-index: 10;
+  transition: background var(--duration-base), transform var(--duration-base), box-shadow var(--duration-base);
+  will-change: transform;
+}
+.gallery-instagram-link:hover {
+  background: rgba(255,255,255,0.25);
+  transform: translateX(-50%) scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
 .gallery-hint {
   position: absolute;
   bottom: clamp(20px, 4vh, 36px);
@@ -1098,10 +1125,29 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 .footer-handle { font-size: 0.85rem; opacity: 0.78; }
 
 .footer-bottom {
-  border-top: 1px solid rgba(255,255,255,0.14);
-  margin-top: 40px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 28px;
   padding-bottom: max(24px, env(safe-area-inset-bottom));
-  text-align: center; font-size: 0.82rem; opacity: 0.7;
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+.footer-bottom-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.footer-bottom-credit {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  transition: opacity 150ms;
+}
+.footer-bottom-credit:hover { opacity: 1; }
+.footer-bottom-credit span {
+  color: var(--vesalio-mist);
+  font-weight: 600;
 }
 
 /* ---------- Floating WhatsApp ---------- */
