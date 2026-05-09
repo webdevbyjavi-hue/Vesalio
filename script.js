@@ -618,8 +618,8 @@ document.addEventListener('DOMContentLoaded', () => {
         xPercent: -50, yPercent: -50,
         y:        wd * ITEM_HEIGHT,
         opacity:  Math.max(0, 1 - Math.abs(wd) * 0.25),
-        duration: 0.55,
-        ease:     'back.out(1.4)'
+        duration: 0.7,
+        ease:     'expo.out'
       });
       btn.classList.toggle('active', i === currentIndex);
     });
@@ -640,8 +640,8 @@ document.addEventListener('DOMContentLoaded', () => {
         opacity:  isActive ? 1 : (isPrev || isNext) ? 0.4  : 0,
         rotation: isPrev ? -3 : isNext ? 3 : 0,
         zIndex:   isActive ? 20 : (isPrev || isNext) ? 10 : 0,
-        duration: 0.55,
-        ease:     'back.out(1.2)'
+        duration: 0.7,
+        ease:     'expo.out'
       });
 
       const img = card.querySelector('img');
@@ -671,6 +671,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   container.addEventListener('mouseenter', () => { isPaused = true;  });
   container.addEventListener('mouseleave', () => { isPaused = false; });
+
+  // ── Wheel scroll on left panel ───────────────────────────────
+  const fcLeft = container.querySelector('.fc-left');
+  if (fcLeft) {
+    let wheelDelta = 0;
+    let wheelTimer = null;
+    fcLeft.addEventListener('wheel', e => {
+      e.preventDefault();
+      wheelDelta += e.deltaY;
+      clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(() => { wheelDelta = 0; }, 150);
+      if (Math.abs(wheelDelta) >= 60) {
+        goTo(currentIndex + (wheelDelta > 0 ? 1 : -1));
+        wheelDelta = 0;
+      }
+    }, { passive: false });
+  }
 
   // ── Touch swipe ──────────────────────────────────────────────
   let touchStartX = 0;
