@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     },
-    { threshold: 0.15, rootMargin: '-80px 0px -20% 0px' }
+    { threshold: 0, rootMargin: '-80px 0px -20% 0px' }
   );
   sections.forEach(s => navObserver.observe(s));
 
