@@ -285,6 +285,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // WhatsApp conversion tracking — GA4
+  [
+    { id: 'waBooking', label: 'booking_section' },
+    { id: 'waFooter',  label: 'footer' },
+    { id: 'waFloat',   label: 'floating_button' },
+  ].forEach(({ id, label }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('click', () => {
+      if (typeof gtag === 'function') {
+        gtag('event', 'whatsapp_click', { event_category: 'CTA', event_label: label });
+      }
+    });
+  });
+
 });
 
 /* =========================================================
