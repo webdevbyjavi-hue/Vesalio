@@ -626,7 +626,6 @@ document.addEventListener('DOMContentLoaded', () => {
 (function () {
   if (!window.gsap) return;
 
-  const ITEM_HEIGHT   = 65;
   const AUTO_INTERVAL = 3000;
 
   const services = [
@@ -645,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const container      = document.getElementById('featureCarousel');
   if (!container) return;
 
-  const labelsCenter   = document.getElementById('fcLabelsCenter');
+  const fcRight        = container.querySelector('.fc-right');
   const cardsContainer = document.getElementById('fcCardsContainer');
   const total          = services.length;
 
@@ -653,95 +652,106 @@ document.addEventListener('DOMContentLoaded', () => {
   let isPaused     = false;
   let autoTimer;
 
-  // ── Build label buttons ──────────────────────────────────────
-  const labelBtns = services.map((s, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'fc-label-btn';
-    btn.innerHTML = `<i class="${s.icon}" aria-hidden="true"></i><span>${s.name}</span>`;
-    btn.setAttribute('aria-label', s.name);
-    btn.addEventListener('click', () => goTo(i));
-    labelsCenter.appendChild(btn);
-    return btn;
-  });
-
-  gsap.set(labelBtns, { xPercent: -50, yPercent: -50 });
-
   // ── Build image cards ────────────────────────────────────────
   const cardEls = services.map((s, i) => {
     const card = document.createElement('div');
     card.className = 'fc-card';
+    const waMsg = encodeURIComponent(`Hola, me gustaría información sobre el servicio de ${s.name}.`);
     card.innerHTML = `
       <img src="${s.image}" alt="${s.name}" loading="${i === 0 ? 'eager' : 'lazy'}" />
       <div class="fc-card-overlay">
         <div class="fc-card-badge">${i + 1} · ${s.name}</div>
         <p class="fc-card-desc">${s.description}</p>
+        <a href="https://wa.me/525548423467?text=${waMsg}" class="fc-wa-btn" target="_blank" rel="noopener" aria-label="Consultar ${s.name} por WhatsApp">
+          <i class="fab fa-whatsapp"></i> Consultar por WhatsApp
+        </a>
       </div>`;
     cardsContainer.appendChild(card);
     return card;
   });
 
+  // ── Set initial card state (all hidden except first) ─────────
+  gsap.set(cardEls,    { opacity: 0, scale: 1.06, zIndex: 0 });
+  gsap.set(cardEls[0], { opacity: 1, scale: 1,    zIndex: 20 });
+
+  // ── Nav arrows ───────────────────────────────────────────────
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'fc-nav-btn fc-nav-btn--prev';
+  prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+  prevBtn.setAttribute('aria-label', 'Servicio anterior');
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'fc-nav-btn fc-nav-btn--next';
+  nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+  nextBtn.setAttribute('aria-label', 'Siguiente servicio');
+
+  fcRight.appendChild(prevBtn);
+  fcRight.appendChild(nextBtn);
+
+  // ── Story progress bar ───────────────────────────────────────
+  const progressWrap = document.createElement('div');
+  progressWrap.className = 'fc-progress';
+  progressWrap.style.setProperty('--fc-duration', AUTO_INTERVAL + 'ms');
+
+  const progressFills = services.map(() => {
+    const seg  = document.createElement('div');
+    seg.className = 'fc-progress-seg';
+    const fill = document.createElement('div');
+    fill.className = 'fc-progress-fill';
+    seg.appendChild(fill);
+    progressWrap.appendChild(seg);
+    return fill;
+  });
+  fcRight.appendChild(progressWrap);
+
   // ── Helpers ──────────────────────────────────────────────────
   function wrapIdx(v) { return ((v % total) + total) % total; }
 
-  function goTo(index) {
+  function goTo(index, resetTimer = false) {
     currentIndex = wrapIdx(index);
     render();
+    if (resetTimer) startAuto();
   }
 
   // ── Render ───────────────────────────────────────────────────
   function render() {
-    labelBtns.forEach((btn, i) => {
-      const dist = i - currentIndex;
-      let wd = dist;
-      if (dist >  total / 2) wd -= total;
-      if (dist < -total / 2) wd += total;
-
-      gsap.to(btn, {
-        xPercent: -50, yPercent: -50,
-        y:        wd * ITEM_HEIGHT,
-        opacity:  Math.max(0, 1 - Math.abs(wd) * 0.25),
-        duration: 0.7,
-        ease:     'expo.out'
-      });
-      btn.classList.toggle('active', i === currentIndex);
+    // Progress bar
+    progressFills.forEach((fill, i) => {
+      fill.classList.remove('done', 'active');
+      if (i < currentIndex) {
+        fill.classList.add('done');
+      } else if (i === currentIndex) {
+        void fill.offsetWidth; // restart CSS animation
+        fill.classList.add('active');
+      }
     });
 
+    // Cards — crossfade + subtle scale
     cardEls.forEach((card, i) => {
       const diff = i - currentIndex;
       let nd = diff;
       if (nd >  total / 2) nd -= total;
       if (nd < -total / 2) nd += total;
-
       const isActive = nd === 0;
-      const isPrev   = nd === -1;
-      const isNext   = nd ===  1;
 
       gsap.to(card, {
-        x:        isActive ? 0 : isPrev ? -110 : isNext ? 110 : 0,
-        scale:    isActive ? 1 : (isPrev || isNext) ? 0.85 : 0.7,
-        opacity:  isActive ? 1 : (isPrev || isNext) ? 0.4  : 0,
-        rotation: isPrev ? -3 : isNext ? 3 : 0,
-        zIndex:   isActive ? 20 : (isPrev || isNext) ? 10 : 0,
-        duration: 0.7,
-        ease:     'expo.out'
-      });
-
-      const img = card.querySelector('img');
-      if (img) gsap.to(img, {
-        filter:   isActive
-          ? 'grayscale(0%) blur(0px) brightness(100%)'
-          : 'grayscale(100%) blur(2px) brightness(70%)',
-        duration: 0.55,
-        ease:     'power2.out'
+        opacity:  isActive ? 1   : 0,
+        scale:    isActive ? 1   : 1.06,
+        zIndex:   isActive ? 20  : 0,
+        duration: 0.85,
+        ease:     'power2.inOut',
       });
 
       const overlay = card.querySelector('.fc-card-overlay');
-      if (overlay) gsap.to(overlay, {
-        opacity:  isActive ? 1 : 0,
-        y:        isActive ? 0 : 16,
-        duration: 0.4,
-        ease:     'power2.out'
-      });
+      if (overlay) {
+        overlay.style.pointerEvents = isActive ? 'auto' : 'none';
+        gsap.to(overlay, {
+          opacity:  isActive ? 1 : 0,
+          y:        isActive ? 0 : 12,
+          duration: 0.55,
+          ease:     'power2.out',
+        });
+      }
     });
   }
 
@@ -751,25 +761,11 @@ document.addEventListener('DOMContentLoaded', () => {
     autoTimer = setInterval(() => { if (!isPaused) goTo(currentIndex + 1); }, AUTO_INTERVAL);
   }
 
-  container.addEventListener('mouseenter', () => { isPaused = true;  });
-  container.addEventListener('mouseleave', () => { isPaused = false; });
+  prevBtn.addEventListener('click', () => goTo(currentIndex - 1, true));
+  nextBtn.addEventListener('click', () => goTo(currentIndex + 1, true));
 
-  // ── Wheel scroll on left panel ───────────────────────────────
-  const fcLeft = container.querySelector('.fc-left');
-  if (fcLeft) {
-    let wheelDelta = 0;
-    let wheelTimer = null;
-    fcLeft.addEventListener('wheel', e => {
-      e.preventDefault();
-      wheelDelta += e.deltaY;
-      clearTimeout(wheelTimer);
-      wheelTimer = setTimeout(() => { wheelDelta = 0; }, 150);
-      if (Math.abs(wheelDelta) >= 60) {
-        goTo(currentIndex + (wheelDelta > 0 ? 1 : -1));
-        wheelDelta = 0;
-      }
-    }, { passive: false });
-  }
+  container.addEventListener('mouseenter', () => { isPaused = true;  progressWrap.classList.add('is-paused');    });
+  container.addEventListener('mouseleave', () => { isPaused = false; progressWrap.classList.remove('is-paused'); });
 
   // ── Touch swipe ──────────────────────────────────────────────
   let touchStartX = 0;
@@ -781,4 +777,193 @@ document.addEventListener('DOMContentLoaded', () => {
 
   render();
   startAuto();
+}());
+
+/* =========================================================
+   SERVICES STAGGER CAROUSEL — fan layout, click-to-center
+   ========================================================= */
+(function () {
+  const services = [
+    { name: "Lesiones deportivas",   desc: "Recuperación integral de lesiones en atletas y deportistas de todos los niveles.", icon: "fas fa-person-running" },
+    { name: "Rehab. ortopédica",     desc: "Tratamiento de afecciones musculoesqueléticas con enfoque funcional.",             icon: "fas fa-bone" },
+    { name: "Ejercicio terapéutico", desc: "Programas de movimiento personalizados según tu condición y objetivos.",           icon: "fas fa-dumbbell" },
+    { name: "Fortalecimiento",       desc: "Desarrollo de fuerza y estabilidad para un rendimiento óptimo y seguro.",          icon: "fas fa-hand-fist" },
+    { name: "Terapia manual",        desc: "Técnicas manuales especializadas para aliviar el dolor y recuperar movilidad.",    icon: "fas fa-hands" },
+    { name: "Agentes físicos",       desc: "Ultrasonido, electroterapia y otros agentes para acelerar la recuperación.",       icon: "fas fa-wave-square" },
+    { name: "Punción seca",          desc: "Liberación de puntos gatillo mediante agujas de acupuntura.",                      icon: "fas fa-syringe" },
+    { name: "Análisis biomecánico",  desc: "Evaluación detallada de tu técnica y eficiencia al correr.",                      icon: "fas fa-shoe-prints" },
+    { name: "Retorno al deporte",    desc: "Protocolo progresivo para volver al deporte de forma segura y efectiva.",         icon: "fas fa-trophy" },
+    { name: "Descargas musculares",  desc: "Liberación de la tensión muscular acumulada por el entrenamiento.",               icon: "fas fa-hand-holding-medical" },
+  ];
+
+  const container = document.getElementById('svcStagger');
+  if (!container) return;
+
+  const nav = container.querySelector('.svc-stagger-nav');
+  let order = services.map((_, i) => i);
+  let cardSize = window.matchMedia('(min-width: 640px)').matches ? 365 : 290;
+
+  function getPosition(orderIdx) {
+    const len = order.length;
+    return len % 2 ? orderIdx - (len + 1) / 2 : orderIdx - len / 2;
+  }
+
+  function handleMove(steps) {
+    const prevOrder = [...order];
+    if (steps > 0) {
+      for (let i = 0; i < steps; i++)  order.push(order.shift());
+    } else {
+      for (let i = 0; i < -steps; i++) order.unshift(order.pop());
+    }
+    render(prevOrder);
+  }
+
+  // ── Build cards ───────────────────────────────────────────────
+  const cardEls = services.map((s, serviceIdx) => {
+    const waMsg = encodeURIComponent(`Hola, me gustaría información sobre el servicio de ${s.name}.`);
+    const card = document.createElement('div');
+    card.className = 'svc-card';
+    card.style.width  = cardSize + 'px';
+    card.style.height = cardSize + 'px';
+    card.innerHTML = `
+      <span class="svc-card-corner"></span>
+      <img src="https://picsum.photos/seed/${serviceIdx + 1}/200/300" alt="${s.name}" class="svc-card-img" loading="${serviceIdx === 0 ? 'eager' : 'lazy'}" />
+      <h3 class="svc-card-name">${s.name}</h3>
+      <div class="svc-card-bottom">
+        <p class="svc-card-desc">${s.desc}</p>
+        <a href="https://wa.me/525548423467?text=${waMsg}" class="fc-wa-btn" target="_blank" rel="noopener" aria-label="Consultar ${s.name} por WhatsApp">
+          <i class="fab fa-whatsapp"></i> Consultar
+        </a>
+      </div>`;
+    card.addEventListener('click', () => {
+      const pos = getPosition(order.indexOf(serviceIdx));
+      if (pos !== 0) handleMove(pos);
+    });
+    container.insertBefore(card, nav);
+    return card;
+  });
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function cardTransform(pos, isCenter) {
+    // Use sign-based offsets (not pos%2) so cards on the same side never flip
+    const tx  = (cardSize / 1.5) * pos;
+    const ty  = isCenter ? -65 : pos > 0 ? 15 : -15;
+    const rot = isCenter ? 0   : pos > 0 ? 2.5 : -2.5;
+    return `translate(-50%,-50%) translateX(${tx}px) translateY(${ty}px) rotate(${rot}deg)`;
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  function render(prevOrder) {
+    order.forEach((serviceIdx, orderIdx) => {
+      const pos      = getPosition(orderIdx);
+      const isCenter = pos === 0;
+      const card     = cardEls[serviceIdx];
+
+      // Detect wrapping (large position jump = off-screen teleport)
+      if (prevOrder) {
+        const prevPos  = getPosition(prevOrder.indexOf(serviceIdx));
+        const jumped   = Math.abs(pos - prevPos) > order.length / 2;
+        if (jumped) {
+          card.style.transition = 'none';
+          card.style.transform  = cardTransform(pos, isCenter);
+          void card.offsetWidth; // flush paint
+          card.style.transition = '';
+        }
+      }
+
+      card.style.transform = cardTransform(pos, isCenter);
+      // Proximity-based z-index: closer to center = higher layer
+      card.style.zIndex = Math.max(0, 10 - Math.abs(pos));
+      card.classList.toggle('is-center', isCenter);
+    });
+  }
+
+  document.getElementById('svcPrev').addEventListener('click', () => handleMove(-1));
+  document.getElementById('svcNext').addEventListener('click', () => handleMove(1));
+
+  window.addEventListener('resize', () => {
+    const next = window.matchMedia('(min-width: 640px)').matches ? 365 : 290;
+    if (next !== cardSize) {
+      cardSize = next;
+      cardEls.forEach(el => { el.style.width = cardSize + 'px'; el.style.height = cardSize + 'px'; });
+      render();
+    }
+  });
+
+  render();
+}());
+
+/* =========================================================
+   EXPANDING CARDS — services section
+   ========================================================= */
+(function () {
+  const services = [
+    { name: "Lesiones deportivas",   desc: "Recuperación integral de lesiones en atletas y deportistas de todos los niveles.", icon: "fas fa-person-running" },
+    { name: "Rehab. ortopédica",     desc: "Tratamiento de afecciones musculoesqueléticas con enfoque funcional.",             icon: "fas fa-bone" },
+    { name: "Ejercicio terapéutico", desc: "Programas de movimiento personalizados según tu condición y objetivos.",           icon: "fas fa-dumbbell" },
+    { name: "Fortalecimiento",       desc: "Desarrollo de fuerza y estabilidad para un rendimiento óptimo y seguro.",          icon: "fas fa-hand-fist" },
+    { name: "Terapia manual",        desc: "Técnicas manuales especializadas para aliviar el dolor y recuperar movilidad.",    icon: "fas fa-hands" },
+    { name: "Agentes físicos",       desc: "Ultrasonido, electroterapia y otros agentes para acelerar la recuperación.",       icon: "fas fa-wave-square" },
+    { name: "Punción seca",          desc: "Liberación de puntos gatillo mediante agujas de acupuntura.",                      icon: "fas fa-syringe" },
+    { name: "Análisis biomecánico",  desc: "Evaluación detallada de tu técnica y eficiencia al correr.",                      icon: "fas fa-shoe-prints" },
+    { name: "Retorno al deporte",    desc: "Protocolo progresivo para volver al deporte de forma segura y efectiva.",         icon: "fas fa-trophy" },
+    { name: "Descargas musculares",  desc: "Liberación de la tensión muscular acumulada por el entrenamiento.",               icon: "fas fa-hand-holding-medical" },
+  ];
+
+  const container = document.getElementById('expCards');
+  if (!container) return;
+
+  let activeIndex = 0;
+  let isDesktop = window.innerWidth >= 768;
+
+  function updateGrid() {
+    if (isDesktop) {
+      container.style.gridTemplateColumns = services
+        .map((_, i) => i === activeIndex ? '5fr' : '1fr').join(' ');
+      container.style.gridTemplateRows = '1fr';
+    } else {
+      container.style.gridTemplateRows = services
+        .map((_, i) => i === activeIndex ? '5fr' : '1fr').join(' ');
+      container.style.gridTemplateColumns = '1fr';
+    }
+    cards.forEach((card, i) => { card.dataset.active = i === activeIndex ? 'true' : 'false'; });
+  }
+
+  function setActive(index) {
+    activeIndex = index;
+    updateGrid();
+  }
+
+  const cards = services.map((s, i) => {
+    const waMsg = encodeURIComponent(`Hola, me gustaría información sobre el servicio de ${s.name}.`);
+    const li = document.createElement('li');
+    li.className = 'exp-card';
+    li.tabIndex = 0;
+    li.setAttribute('aria-label', s.name);
+    li.innerHTML = `
+      <img src="https://picsum.photos/seed/${i + 1}/900/600" alt="${s.name}" class="exp-card-img" loading="${i === 0 ? 'eager' : 'lazy'}" />
+      <div class="exp-card-overlay"></div>
+      <article class="exp-card-content">
+        <span class="exp-card-label">${s.name}</span>
+        <i class="${s.icon} exp-card-icon" aria-hidden="true"></i>
+        <h3 class="exp-card-title">${s.name}</h3>
+        <p class="exp-card-desc">${s.desc}</p>
+        <a href="https://wa.me/525548423467?text=${waMsg}" class="fc-wa-btn exp-card-wa" target="_blank" rel="noopener">
+          <i class="fab fa-whatsapp"></i> Consultar
+        </a>
+      </article>`;
+
+    li.addEventListener('mouseenter', () => setActive(i));
+    li.addEventListener('focus',      () => setActive(i));
+    li.addEventListener('click',      () => setActive(i));
+    container.appendChild(li);
+    return li;
+  });
+
+  window.addEventListener('resize', () => {
+    const next = window.innerWidth >= 768;
+    if (next !== isDesktop) { isDesktop = next; updateGrid(); }
+  });
+
+  updateGrid();
 }());
