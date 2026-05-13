@@ -256,6 +256,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
 
+    if (typeof gtag === 'function') {
+      gtag('event', 'whatsapp_click', { event_category: 'CTA', event_label: 'contact_form', service_name: service });
+    }
+
     localStorage.setItem(SUBMIT_KEY, String(now));
     status.textContent = 'Abriendo WhatsApp con tu mensaje…';
     status.classList.add('ok');
@@ -667,6 +671,13 @@ document.addEventListener('DOMContentLoaded', () => {
         </a>
       </div>`;
     cardsContainer.appendChild(card);
+
+    card.querySelector('.fc-wa-btn').addEventListener('click', () => {
+      if (typeof gtag === 'function') {
+        gtag('event', 'whatsapp_click', { event_category: 'CTA', event_label: 'service_card', service_name: s.name });
+      }
+    });
+
     return card;
   });
 
