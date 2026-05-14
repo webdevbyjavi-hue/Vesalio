@@ -320,12 +320,6 @@ document.addEventListener('DOMContentLoaded', () => {
       photo: "./assets/inigo.png",
     },
     {
-      name: "Ana Cristina Suárez",
-      role: "Ortopedia & Oncología",
-      description: "Especialista en ortopedia y secuelas oncológicas, vasculares y linfáticas. Triatleta de cortas distancias, comprometida con cada paciente.",
-      photo: "./assets/ana.png",
-    },
-    {
       name: "Irina Segura",
       role: "Biomecánica de carrera",
       description: "Especialista en ortopedia, deporte y biomecánica de carrera. Triatleta de cortas y medianas distancias, nadadora de aguas abiertas.",
@@ -343,7 +337,27 @@ document.addEventListener('DOMContentLoaded', () => {
       description: "Psicoterapeuta psicoanalítica especialista en niños, adolescentes, TCA's, obesidad y College Counseling. Foodie y fanática de viajar.",
       photo: "./assets/florencia.png",
     },
+    {
+      name: "Diego [Apellido]",
+      role: "Lorem ipsum dolor",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vehicula risus at nunc dapibus, vel gravida est fermentum. Corredor apasionado.",
+      photo: "https://picsum.photos/seed/diego/400/500",
+    },
+    {
+      name: "Fercho [Apellido]",
+      role: "Lorem ipsum dolor",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus. Ciclista y entusiasta del fitness.",
+      photo: "https://picsum.photos/seed/fercho/400/500",
+    },
+    {
+      name: "Celia [Apellido]",
+      role: "Lorem ipsum dolor",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Apasionada del yoga.",
+      photo: "https://picsum.photos/seed/celia/400/500",
+    },
   ];
+
+  members.forEach(m => { const img = new Image(); img.src = m.photo; });
 
   const photoBlock = document.querySelector('.tpc-photo-block');
   const cardBlock  = document.querySelector('.tpc-card-block');
@@ -455,11 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
     { src: './assets/athletes/IMG_1751.JPG',  label: 'Atleta #6' },
     { src: './assets/athletes/IMG_1831.JPG',  label: 'Atleta #7' },
     { src: './assets/athletes/IMG_2445.JPG',  label: 'Atleta #8' },
-    { src: './assets/athletes/IMG_2409.jpg',  label: 'Atleta #9' },
-    { src: './assets/athletes/IMG_1855.JPG',  label: 'Atleta #10' },
-    { src: './assets/athletes/IMG_9205.JPG',  label: 'Atleta #11' },
-    { src: './assets/athletes/IMG_7833.JPG',  label: 'Atleta #12' },
-    { src: './assets/athletes/IMG_1845.JPG',  label: 'Atleta #13' },
   ];
 
   const anglePerItem = 360 / images.length;

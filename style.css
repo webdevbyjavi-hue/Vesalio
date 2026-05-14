@@ -246,6 +246,16 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 }
 .nav-link.cta-link::after { display: none; }
 .nav-link.cta-link:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.nav-link.cta-link.active {
+  background: linear-gradient(135deg, #b8cfe0, var(--vesalio-blue-deep));
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.7), 0 4px 20px rgba(42,104,170,0.5);
+  transform: translateY(-1px);
+  animation: ctaPulse 1.8s ease-in-out infinite;
+}
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(255,255,255,0.7), 0 4px 20px rgba(42,104,170,0.5); }
+  50%       { box-shadow: 0 0 0 5px rgba(255,255,255,0.4), 0 6px 28px rgba(42,104,170,0.7); }
+}
 
 .menu-toggle {
   display: none;
