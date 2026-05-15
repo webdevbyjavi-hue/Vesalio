@@ -4,23 +4,28 @@
    ========================================================= */
 
 :root {
-  /* Brand colors */
-  --vesalio-blue:      #9AB3C4;   /* primary soft blue-gray */
-  --vesalio-blue-dark: #6F8A9E;   /* deeper accent */
-  --vesalio-blue-deep: #4D6B80;   /* for titles */
-  --vesalio-mist:      #DBE5EC;   /* light tint */
-  --vesalio-cloud:     #EEF3F7;   /* section bg */
-  --vesalio-white:     #FFFFFF;
+  /* ── Brand tokens — CLAUDE.md ── */
+  --color-primary: #4f8491;   /* Dusty Teal   */
+  --color-dark:    #1c1c1c;   /* Jet Black    */
+  --color-light:   #fafafa;   /* Cold Off-White */
 
-  --ink:        #3C4A55;
-  --ink-soft:   #6B7985;
-  --line:       #E4ECF2;
+  /* ── Derived tokens (component aliases) ── */
+  --vesalio-blue:      #4f8491;               /* was #9AB3C4 */
+  --vesalio-blue-dark: #3d6670;               /* darker teal */
+  --vesalio-blue-deep: #2e4e59;               /* deepest teal */
+  --vesalio-mist:      rgba(79, 132, 145, 0.15); /* light teal tint */
+  --vesalio-cloud:     #f2f6f7;               /* very light teal-tinted bg */
+  --vesalio-white:     #fafafa;               /* Cold Off-White */
 
-  --accent:     #7FA0B4;
+  --ink:      #1c1c1c;   /* Jet Black */
+  --ink-soft: #4a5860;   /* muted dark */
+  --line:     rgba(79, 132, 145, 0.18); /* subtle teal border */
 
-  /* Typography */
-  --font-serif: "Cormorant Garamond", "Times New Roman", serif;
-  --font-sans:  "Montserrat", system-ui, -apple-system, sans-serif;
+  --accent: #4f8491;   /* Dusty Teal */
+
+  /* Typography — Avenir (web fallback: Nunito Sans) */
+  --font-serif: 'Avenir', 'Avenir Next', 'Nunito Sans', sans-serif;
+  --font-sans:  'Avenir', 'Avenir Next', 'Nunito Sans', sans-serif;
 
   /* Shape */
   --radius-sm:   10px;
@@ -29,10 +34,10 @@
   --radius-full: 9999px;
 
   /* Shadows */
-  --shadow-sm: 0 4px 14px rgba(77, 107, 128, 0.08);
-  --shadow-md: 0 10px 30px rgba(77, 107, 128, 0.12);
-  --shadow-lg: 0 24px 60px rgba(77, 107, 128, 0.18);
-  --shadow-xl: 0 16px 64px rgba(77, 107, 128, 0.22);
+  --shadow-sm: 0 4px 14px rgba(79, 132, 145, 0.08);
+  --shadow-md: 0 10px 30px rgba(79, 132, 145, 0.12);
+  --shadow-lg: 0 24px 60px rgba(79, 132, 145, 0.18);
+  --shadow-xl: 0 16px 64px rgba(79, 132, 145, 0.22);
 
   /* Motion */
   --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);

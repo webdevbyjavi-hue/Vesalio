@@ -1,17 +1,124 @@
 # Vesalio – Website Design Reference
 
-## Brand Identity
+# Brand Guidelines — Webika Studio
 
-- No formal brand manual or Brandbook exists; assets will be provided by Amargo Studio
-- **Pending assets**: hex/RGB color codes, logo files, and typography files
-- Logo typography is being considered for a weight increase — current version is too thin for branding use
-- Use placeholder assets until finals are delivered
+This file defines the visual identity and design system for Webika Studio. All UI components, pages, and artifacts should follow these rules consistently.
 
-## Visual Content
+---
 
-- Use placeholder images (`placeholders`) in the layout during development
-- Amargo Studio will review the design with placeholders before final images are added
-- High-resolution photos will be sent by Amargo Studio when ready
+## Color Palette
+
+| Name           | Hex       | RGB              | Usage                                      |
+|----------------|-----------|------------------|--------------------------------------------|
+| Dusty Teal     | `#4f8491` | R:79 G:132 B:145 | Primary accent, CTAs, links, highlights    |
+| Jet Black      | `#1c1c1c` | R:28 G:28 B:28   | Backgrounds (dark mode), body text         |
+| Cold Off-White | `#fafafa` | R:250 G:250 B:250| Backgrounds (light mode), text on dark bg  |
+
+### CSS Variables
+
+```css
+:root {
+  --color-primary: #4f8491;   /* Dusty Teal */
+  --color-dark: #1c1c1c;      /* Jet Black */
+  --color-light: #fafafa;     /* Cold Off-White */
+}
+```
+
+### Usage Rules
+
+- Use **Dusty Teal** for interactive elements: buttons, links, hover states, borders, and icon accents.
+- Use **Jet Black** as the primary background for dark-themed sections or as the main text color on light backgrounds.
+- Use **Cold Off-White** as the page background or as text/icon color on dark sections.
+- Avoid introducing new colors without explicit approval. Tints/shades of the palette are acceptable (e.g. `#4f849180` for a semi-transparent teal overlay).
+
+---
+
+## Typography
+
+### Primary Typeface: Avenir Roman
+
+Avenir is the sole typeface for the brand. Use **Avenir Roman** (weight 400) as the base. Bold and medium weights of Avenir can be used for headings if available.
+
+```css
+font-family: 'Avenir', 'Avenir Next', 'Nunito Sans', sans-serif;
+```
+
+> **Fallback stack:** If Avenir is not available (e.g. Google Fonts environment), use `Nunito Sans` or `DM Sans` as the closest web-safe alternative.
+
+### Type Scale (Suggested)
+
+| Role        | Size     | Weight | Notes                        |
+|-------------|----------|--------|------------------------------|
+| Display     | 3–5rem   | 700    | Hero headlines               |
+| H1          | 2.5rem   | 600    | Page titles                  |
+| H2          | 2rem     | 600    | Section headings             |
+| H3          | 1.5rem   | 500    | Card titles, subheadings     |
+| Body        | 1rem     | 400    | Paragraphs, descriptions     |
+| Small / UI  | 0.875rem | 400    | Labels, captions, metadata   |
+
+### Typography Rules
+
+- Use **sentence case** for all headings (not ALL CAPS or Title Case everywhere).
+- Line height for body text: `1.6–1.75`.
+- Letter spacing for headings: `−0.01em` to `−0.02em` for a refined, tight feel.
+- Never mix more than one typeface. Avenir handles all typographic roles.
+
+---
+
+## Design Principles
+
+1. **Refined minimalism** — Generous whitespace, clean layouts, no visual clutter.
+2. **Dark-first** — The primary aesthetic leans dark (Jet Black backgrounds, Off-White text, Teal accents). Light sections are used for contrast and breathing room.
+3. **Subtle motion** — Animations should feel intentional and smooth, not flashy. Use fade-ins, slide-ups, and hover transitions under 300ms.
+4. **Teal as the single accent** — Dusty Teal is the only accent color. It draws the eye to CTAs and key interactions. Do not dilute it with other accent colors.
+5. **Typography-led hierarchy** — Size and weight carry hierarchy, not color. Color is reserved for emphasis and interaction states.
+
+---
+
+## Component Guidelines
+
+### Buttons
+
+```css
+/* Primary */
+background: #4f8491;
+color: #fafafa;
+border-radius: 4–8px;
+padding: 0.75rem 1.5rem;
+font-family: Avenir, sans-serif;
+font-weight: 500;
+
+/* Secondary / Ghost */
+background: transparent;
+border: 1.5px solid #4f8491;
+color: #4f8491;
+```
+
+### Cards
+
+- Background: `#1c1c1c` (on dark layouts) or `#fafafa` (on light layouts)
+- Border: `1px solid rgba(79, 132, 145, 0.2)` — subtle teal border for depth
+- Border-radius: `8–12px`
+- Hover: subtle teal glow or border opacity increase
+
+### Links
+
+- Default: `#4f8491`
+- Hover: slightly lighter teal or underline animation
+- Never use default browser blue
+
+---
+
+## Do's and Don'ts
+
+| Do ✅                                          | Don't ❌                                      |
+|-----------------------------------------------|----------------------------------------------|
+| Use Dusty Teal for CTAs and accents           | Introduce purple, orange, or other accents   |
+| Keep layouts spacious and clean               | Crowd elements or add decorative clutter     |
+| Use Avenir Roman as the only typeface         | Mix in Inter, Roboto, or system fonts        |
+| Lean into dark backgrounds                    | Default to pure white `#ffffff` backgrounds  |
+| Use subtle animations (opacity, translate)    | Use bouncy, over-the-top animations          |
+| Keep copy concise and direct                  | Use filler or vague marketing language       |
 
 ## Website Structure
 
