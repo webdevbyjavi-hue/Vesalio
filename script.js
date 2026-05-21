@@ -71,9 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
     (entries, obs) => {
       entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
-          // stagger slightly
-          setTimeout(() => entry.target.classList.add('in-view'), i * 60);
-          obs.unobserve(entry.target);
+          const el = entry.target;
+          el.style.willChange = 'transform, opacity';
+          setTimeout(() => {
+            el.classList.add('in-view');
+            setTimeout(() => { el.style.willChange = 'auto'; }, 900);
+          }, i * 60);
+          obs.unobserve(el);
         }
       });
     },
@@ -352,7 +356,6 @@ document.addEventListener('DOMContentLoaded', () => {
     },
   ];
 
-  members.forEach(m => { const img = new Image(); img.src = m.photo; });
 
   const photoBlock = document.querySelector('.tpc-photo-block');
   const cardBlock  = document.querySelector('.tpc-card-block');
@@ -395,22 +398,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (next === current || busy) return;
     busy = true;
 
-    gsap.to([photoBlock, cardBlock], {
-      opacity: 0,
-      duration: 0.14,
-      ease: 'power1.out',
-      onComplete() {
-        current = next;
-        render(members[current]);
-        syncDots();
-        gsap.to(photoBlock, { opacity: 1, duration: 0.22, ease: 'power2.out' });
-        gsap.fromTo(cardBlock,
-          { opacity: 0, y: -10 },
-          { opacity: 1, y: 0, duration: 0.28, ease: 'power2.out',
-            onComplete() { busy = false; } }
-        );
-      }
-    });
+    photoBlock.style.opacity = '0';
+    cardBlock.style.opacity  = '0';
+
+    setTimeout(() => {
+      current = next;
+      render(members[current]);
+      syncDots();
+      photoBlock.style.opacity = '1';
+      cardBlock.style.opacity  = '1';
+      setTimeout(() => { busy = false; }, 280);
+    }, 160);
   }
 
   // Touch swipe
@@ -427,16 +425,25 @@ document.addEventListener('DOMContentLoaded', () => {
   prevBtn?.addEventListener('click', () => goTo(current - 1));
   nextBtn?.addEventListener('click', () => goTo(current + 1));
 
-  // GSAP entrance animation
-  if (window.gsap && wrap) {
-    const obs = new IntersectionObserver(entries => {
+  // Entrance animation via IntersectionObserver + CSS transitions
+  if (wrap) {
+    photoBlock.style.opacity   = '0';
+    photoBlock.style.transform = 'translateX(-30px)';
+    cardBlock.style.opacity    = '0';
+    cardBlock.style.transform  = 'translateX(30px)';
+
+    const entrObs = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
-        gsap.from('.tpc-photo-block', { opacity: 0, x: -30, duration: 0.7, ease: 'power2.out' });
-        gsap.from('.tpc-card-block',  { opacity: 0, x: 30,  duration: 0.7, ease: 'power2.out', delay: 0.15 });
-        obs.disconnect();
+        photoBlock.style.opacity   = '1';
+        photoBlock.style.transform = '';
+        setTimeout(() => {
+          cardBlock.style.opacity   = '1';
+          cardBlock.style.transform = '';
+        }, 150);
+        entrObs.disconnect();
       }
     }, { threshold: 0.2 });
-    obs.observe(wrap);
+    entrObs.observe(wrap);
   }
 
   render(members[0]);
@@ -466,14 +473,14 @@ document.addEventListener('DOMContentLoaded', () => {
   let radius = getRadius();
 
   const images = [
-    { src: './assets/athletes/IMG_2400.jpg',  label: 'Atleta #1' },
-    { src: './assets/athletes/IMG_9218.JPG',  label: 'Atleta #2' },
-    { src: './assets/athletes/IMG_1668.JPG',  label: 'Atleta #3' },
-    { src: './assets/athletes/IMG_1643.JPG',  label: 'Atleta #4' },
-    { src: './assets/athletes/IMG_1642.JPG',  label: 'Atleta #5' },
-    { src: './assets/athletes/IMG_1751.JPG',  label: 'Atleta #6' },
-    { src: './assets/athletes/IMG_1831.JPG',  label: 'Atleta #7' },
-    { src: './assets/athletes/IMG_2445.JPG',  label: 'Atleta #8' },
+    { src: './assets/athletes/IMG_2400.webp',  label: 'Atleta #1' },
+    { src: './assets/athletes/IMG_9218.webp',  label: 'Atleta #2' },
+    { src: './assets/athletes/IMG_1668.webp',  label: 'Atleta #3' },
+    { src: './assets/athletes/IMG_1643.webp',  label: 'Atleta #4' },
+    { src: './assets/athletes/IMG_1642.webp',  label: 'Atleta #5' },
+    { src: './assets/athletes/IMG_1751.webp',  label: 'Atleta #6' },
+    { src: './assets/athletes/IMG_1831.webp',  label: 'Atleta #7' },
+    { src: './assets/athletes/IMG_2445.webp',  label: 'Atleta #8' },
   ];
 
   const anglePerItem = 360 / images.length;
@@ -523,12 +530,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (newRadius !== radius) { radius = newRadius; layoutCards(); }
   }, { passive: true });
 
+  let rafId = null;
+  let isVisible = false;
+
   function tick() {
+    if (!isVisible) { rafId = null; return; }
     rotation += AUTO_SPEED;
     applyRotation(rotation);
-    requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(tick);
   }
-  requestAnimationFrame(tick);
+
+  const gallerySect = document.getElementById('galeria');
+  if (gallerySect) {
+    new IntersectionObserver(entries => {
+      isVisible = entries[0].isIntersecting;
+      if (isVisible && !rafId) rafId = requestAnimationFrame(tick);
+    }, { threshold: 0 }).observe(gallerySect);
+  }
 }());
 
 // ── Flying Logo ──────────────────────────────────────────────────────────────
@@ -653,19 +671,13 @@ window.addEventListener('scroll', () => {
   if (!container) return;
 
   let activeIndex = 0;
-  let isDesktop = window.innerWidth >= 768;
 
   function updateGrid() {
-    if (isDesktop) {
-      container.style.gridTemplateColumns = services
-        .map((_, i) => i === activeIndex ? '5fr' : '1fr').join(' ');
-      container.style.gridTemplateRows = '1fr';
-    } else {
-      container.style.gridTemplateRows = services
-        .map((_, i) => i === activeIndex ? '5fr' : '1fr').join(' ');
-      container.style.gridTemplateColumns = '1fr';
-    }
-    cards.forEach((card, i) => { card.dataset.active = i === activeIndex ? 'true' : 'false'; });
+    cards.forEach((card, i) => {
+      const active = i === activeIndex;
+      card.dataset.active = active ? 'true' : 'false';
+      card.style.flexGrow = active ? '5' : '1';
+    });
   }
 
   function setActive(index) {
@@ -699,13 +711,10 @@ window.addEventListener('scroll', () => {
     return li;
   });
 
-  window.addEventListener('resize', () => {
-    const next = window.innerWidth >= 768;
-    if (next !== isDesktop) { isDesktop = next; updateGrid(); }
-  });
-
-  // Set initial grid without triggering the CSS transition
-  container.style.transition = 'none';
+  // Set initial state without triggering CSS transitions
+  cards.forEach(card => { card.style.transition = 'none'; });
   updateGrid();
-  requestAnimationFrame(() => requestAnimationFrame(() => { container.style.transition = ''; }));
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    cards.forEach(card => { card.style.transition = ''; });
+  }));
 }());
