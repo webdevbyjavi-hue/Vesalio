@@ -15,7 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
   ----------------------------------------------------- */
   const header = document.getElementById('siteHeader');
   const progressBar = document.getElementById('scrollProgressBar');
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks  = document.querySelectorAll('.nav-link');
   let rafPending = false;
+
   const applyHeaderStyle = () => {
     if (window.scrollY > 40) header.classList.add('scrolled');
     else header.classList.remove('scrolled');
@@ -25,6 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const pct = docHeight > 0 ? window.scrollY / docHeight : 0;
       progressBar.style.transform = `scaleX(${pct})`;
     }
+
+    const scrollMid = window.scrollY + header.offsetHeight + 10;
+    let activeId = null;
+    sections.forEach(s => { if (s.offsetTop <= scrollMid) activeId = s.id; });
+    navLinks.forEach(l => { l.classList.toggle('active', l.getAttribute('href') === `#${activeId}`); });
   };
   const onScroll = () => {
     if (!rafPending) {
@@ -54,25 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* -----------------------------------------------------
-     Active nav link based on section in view
-  ----------------------------------------------------- */
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-link');
-  const navObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const id = entry.target.getAttribute('id');
-          navLinks.forEach(l => {
-            l.classList.toggle('active', l.getAttribute('href') === `#${id}`);
-          });
-        }
-      });
-    },
-    { threshold: 0, rootMargin: '-80px 0px -20% 0px' }
-  );
-  sections.forEach(s => navObserver.observe(s));
 
   /* -----------------------------------------------------
      Reveal on scroll
@@ -317,37 +306,43 @@ document.addEventListener('DOMContentLoaded', () => {
       name: "Íñigo Salazar",
       role: "Fisioterapeuta deportivo",
       description: "Especializado en deporte y evaluación de movimiento funcional. Triatleta de medias y largas distancias, apasionado del rendimiento humano.",
-      photo: "./assets/inigo.png",
+      photo: "./assets/inigo.jpg",
+      objectPosition: "center 6%",
     },
     {
       name: "Irina Segura",
       role: "Biomecánica de carrera",
       description: "Especialista en ortopedia, deporte y biomecánica de carrera. Triatleta de cortas y medianas distancias, nadadora de aguas abiertas.",
-      photo: "./assets/irina.png",
+      photo: "./assets/irina.jpg",
+      objectPosition: "center 25%",
     },
     {
       name: "Gabriela Mejía",
       role: "Punción seca",
       description: "Especialista en punción seca y liberación de puntos gatillo. Apasionada de la filigrana y el salto de cuerda.",
-      photo: "./assets/gaby.png",
+      photo: "./assets/gaby.jpg",
+      objectPosition: "center top",
     },
     {
       name: "Florencia Rosso",
       role: "Psicoterapia",
       description: "Psicoterapeuta psicoanalítica especialista en niños, adolescentes, TCA's, obesidad y College Counseling. Foodie y fanática de viajar.",
       photo: "./assets/florencia.png",
+      objectPosition: "center 100%",
     },
     {
       name: "Diego [Apellido]",
       role: "Lorem ipsum dolor",
       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vehicula risus at nunc dapibus, vel gravida est fermentum. Corredor apasionado.",
-      photo: "https://picsum.photos/seed/diego/400/500",
+      photo: "./assets/diego.jpg",
+      objectPosition: "center top",
     },
     {
       name: "Fercho [Apellido]",
       role: "Lorem ipsum dolor",
       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus. Ciclista y entusiasta del fitness.",
-      photo: "https://picsum.photos/seed/fercho/400/500",
+      photo: "./assets/fercho.jpg",
+      objectPosition: "center 10%",
     },
     {
       name: "Celia [Apellido]",
@@ -383,11 +378,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function render(m) {
-    imgEl.src          = m.photo;
-    imgEl.alt          = m.name;
-    nameEl.textContent = m.name;
-    roleEl.textContent = m.role;
-    descEl.textContent = m.description;
+    imgEl.src                  = m.photo;
+    imgEl.alt                  = m.name;
+    imgEl.style.objectPosition = m.objectPosition || 'center top';
+    nameEl.textContent         = m.name;
+    roleEl.textContent         = m.role;
+    descEl.textContent         = m.description;
   }
 
   function syncDots() {
@@ -457,8 +453,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const track = document.getElementById('galleryTrack');
   if (!track) return;
 
-  const RADIUS = 555;
-  const AUTO_SPEED = 0.018; // degrees per frame when idle
+  const AUTO_SPEED = 0.018;
+
+  function getRadius() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    if (h < 500 || w < 480) return 220;
+    if (w < 768)             return 360;
+    return 555;
+  }
+
+  let radius = getRadius();
 
   const images = [
     { src: './assets/athletes/IMG_2400.jpg',  label: 'Atleta #1' },
@@ -473,12 +478,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const anglePerItem = 360 / images.length;
 
-  // Build gallery cards
-  images.forEach((item, i) => {
+  const cards = images.map((item, i) => {
     const card = document.createElement('div');
     card.className = 'gallery-card';
     card.setAttribute('aria-label', item.label);
-    card.style.transform = `rotateY(${i * anglePerItem}deg) translateZ(${RADIUS}px)`;
 
     const img = document.createElement('img');
     img.src     = item.src;
@@ -492,56 +495,41 @@ document.addEventListener('DOMContentLoaded', () => {
     card.appendChild(img);
     card.appendChild(label);
     track.appendChild(card);
+    return card;
   });
 
-  const section = document.getElementById('galeria');
-  let rotation   = 0;
-  let isScrolling = false;
-  let scrollTimer = null;
-  let rafId       = null;
+  function layoutCards() {
+    cards.forEach((card, i) => {
+      card.style.transform = `rotateY(${i * anglePerItem}deg) translateZ(${radius}px)`;
+    });
+  }
+  layoutCards();
+
+  let rotation = 0;
 
   function applyRotation(deg) {
     track.style.transform = `rotateY(${deg}deg)`;
-
-    // Update per-card opacity: cards facing away are dimmer
-    const cards = track.querySelectorAll('.gallery-card');
     cards.forEach((card, i) => {
-      const itemAngle     = i * anglePerItem;
-      const totalRot      = deg % 360;
-      const relative      = ((itemAngle + totalRot) % 360 + 360) % 360;
-      const normalized    = relative > 180 ? 360 - relative : relative;
-      card.style.opacity  = Math.max(0.25, 1 - normalized / 180);
+      const itemAngle  = i * anglePerItem;
+      const totalRot   = deg % 360;
+      const relative   = ((itemAngle + totalRot) % 360 + 360) % 360;
+      const normalized = relative > 180 ? 360 - relative : relative;
+      card.style.opacity = Math.max(0.25, 1 - normalized / 180);
     });
   }
 
-  // Scroll-driven rotation: maps scroll progress within section → 0–360°
-  function onScroll() {
-    if (!section) return;
-    const rect          = section.getBoundingClientRect();
-    const sectionH      = section.offsetHeight - window.innerHeight;
-    const scrolled      = -rect.top;
-    if (scrolled < 0 || scrolled > sectionH) return;
+  window.addEventListener('resize', () => {
+    const newRadius = getRadius();
+    if (newRadius !== radius) { radius = newRadius; layoutCards(); }
+  }, { passive: true });
 
-    rotation = (scrolled / sectionH) * 360;
-    applyRotation(rotation);
-
-    isScrolling = true;
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(() => { isScrolling = false; }, 150);
-  }
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-
-  // Auto-rotate when user isn't scrolling
   function tick() {
-    if (!isScrolling) {
-      rotation += AUTO_SPEED;
-      applyRotation(rotation);
-    }
-    rafId = requestAnimationFrame(tick);
+    rotation += AUTO_SPEED;
+    applyRotation(rotation);
+    requestAnimationFrame(tick);
   }
-  rafId = requestAnimationFrame(tick);
-})();
+  requestAnimationFrame(tick);
+}());
 
 // ── Flying Logo ──────────────────────────────────────────────────────────────
 (function () {
@@ -638,18 +626,27 @@ document.addEventListener('DOMContentLoaded', () => {
 /* =========================================================
    EXPANDING CARDS — services section
    ========================================================= */
+// Scroll guard: blocks hover-triggered grid reorganization while the user is scrolling
+let isScrolling = false;
+let _scrollTimer = null;
+window.addEventListener('scroll', () => {
+  isScrolling = true;
+  clearTimeout(_scrollTimer);
+  _scrollTimer = setTimeout(() => { isScrolling = false; }, 150);
+}, { passive: true });
+
 (function () {
   const services = [
-    { name: "Lesiones deportivas",   desc: "Recuperación integral de lesiones en atletas y deportistas de todos los niveles.", icon: "fas fa-person-running" },
-    { name: "Rehab. ortopédica",     desc: "Tratamiento de afecciones musculoesqueléticas con enfoque funcional.",             icon: "fas fa-bone" },
-    { name: "Ejercicio terapéutico", desc: "Programas de movimiento personalizados según tu condición y objetivos.",           icon: "fas fa-dumbbell" },
+    { name: "Lesiones deportivas",   desc: "Recuperación integral de lesiones en atletas y deportistas de todos los niveles.", icon: "fas fa-person-running", img: "assets/lesiones_deportivas.jpg" },
+    { name: "Rehab. ortopédica",     desc: "Tratamiento de afecciones musculoesqueléticas con enfoque funcional.",             icon: "fas fa-bone", img: "assets/rehab_ortopedica.jpg" },
+    { name: "Ejercicio terapéutico", desc: "Programas de movimiento personalizados según tu condición y objetivos.",           icon: "fas fa-dumbbell", img: "assets/ejercicio_terapeutico.jpg" },
     { name: "Fortalecimiento",       desc: "Desarrollo de fuerza y estabilidad para un rendimiento óptimo y seguro.",          icon: "fas fa-hand-fist" },
-    { name: "Terapia manual",        desc: "Técnicas manuales especializadas para aliviar el dolor y recuperar movilidad.",    icon: "fas fa-hands" },
-    { name: "Agentes físicos",       desc: "Ultrasonido, electroterapia y otros agentes para acelerar la recuperación.",       icon: "fas fa-wave-square" },
-    { name: "Punción seca",          desc: "Liberación de puntos gatillo mediante agujas de acupuntura.",                      icon: "fas fa-syringe" },
-    { name: "Análisis biomecánico",  desc: "Evaluación detallada de tu técnica y eficiencia al correr.",                      icon: "fas fa-shoe-prints" },
-    { name: "Retorno al deporte",    desc: "Protocolo progresivo para volver al deporte de forma segura y efectiva.",         icon: "fas fa-trophy" },
-    { name: "Descargas musculares",  desc: "Liberación de la tensión muscular acumulada por el entrenamiento.",               icon: "fas fa-hand-holding-medical" },
+    { name: "Terapia manual",        desc: "Técnicas manuales especializadas para aliviar el dolor y recuperar movilidad.",    icon: "fas fa-hands", img: "assets/terapia_manual.jpg" },
+    { name: "Agentes físicos",       desc: "Ultrasonido, electroterapia y otros agentes para acelerar la recuperación.",       icon: "fas fa-wave-square", img: "assets/agentes_fisicos.jpg" },
+    { name: "Punción seca",          desc: "Liberación de puntos gatillo mediante agujas de acupuntura.",                      icon: "fas fa-syringe", img: "assets/puncion_seca.jpg" },
+    { name: "Análisis biomecánico",  desc: "Evaluación detallada de tu técnica y eficiencia al correr.",                      icon: "fas fa-shoe-prints", img: "assets/analisis_biomecanico.jpg" },
+    { name: "Retorno al deporte",    desc: "Protocolo progresivo para volver al deporte de forma segura y efectiva.",         icon: "fas fa-trophy", img: "assets/retorno_al_deporte.jpg" },
+    { name: "Descargas musculares",  desc: "Liberación de la tensión muscular acumulada por el entrenamiento.",               icon: "fas fa-hand-holding-medical", img: "assets/descargas_musculares.jpg" },
   ];
 
   const container = document.getElementById('expCards');
@@ -683,7 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
     li.tabIndex = 0;
     li.setAttribute('aria-label', s.name);
     li.innerHTML = `
-      <img src="https://picsum.photos/seed/${i + 1}/900/600" alt="${s.name}" class="exp-card-img" loading="${i === 0 ? 'eager' : 'lazy'}" />
+      ${s.img ? `<img src="${s.img}" alt="${s.name}" class="exp-card-img" loading="${i === 0 ? 'eager' : 'lazy'}" />` : ''}
       <div class="exp-card-overlay"></div>
       <article class="exp-card-content">
         <span class="exp-card-label">${s.name}</span>
@@ -695,7 +692,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </a>
       </article>`;
 
-    li.addEventListener('mouseenter', () => setActive(i));
+    li.addEventListener('mouseenter', () => { if (!isScrolling) setActive(i); });
     li.addEventListener('focus',      () => setActive(i));
     li.addEventListener('click',      () => setActive(i));
     container.appendChild(li);
@@ -707,5 +704,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (next !== isDesktop) { isDesktop = next; updateGrid(); }
   });
 
+  // Set initial grid without triggering the CSS transition
+  container.style.transition = 'none';
   updateGrid();
+  requestAnimationFrame(() => requestAnimationFrame(() => { container.style.transition = ''; }));
 }());

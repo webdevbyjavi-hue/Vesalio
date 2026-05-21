@@ -17,12 +17,17 @@
     gtag('js', new Date());
     gtag('config', 'G-8MLQ6CW3R6');
   </script>
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/favicon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <!-- GSAP -->
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -42,10 +47,10 @@
         <a href="#inicio" class="nav-link active">Inicio</a>
         <a href="#nosotros" class="nav-link">Nosotros</a>
         <a href="#servicios" class="nav-link">Servicios</a>
-        <a href="#galeria" class="nav-link">Galería</a>
         <a href="#equipo" class="nav-link">Equipo</a>
-        <a href="#contacto" class="nav-link cta-link" role="button">Agenda tu cita</a>
         <a href="#ubicacion" class="nav-link">Ubicación</a>
+        <a href="#contacto" class="nav-link cta-link" role="button">Agenda tu cita</a>
+        <a href="#galeria" class="nav-link">Galería</a>
       </nav>
 
       <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
@@ -139,26 +144,6 @@
     </section>
 
     <!-- ===================== GALERÍA ===================== -->
-    <section class="gallery-section" id="galeria">
-      <div class="gallery-sticky">
-        <div class="gallery-header container">
-          <span class="section-eyebrow">Galería</span>
-          <h2 class="section-title">Unete a la Comunidad <span class="accent">Vesalio</span></h2>
-        </div>
-        <div class="gallery-3d">
-          <div class="gallery-track" id="galleryTrack"></div>
-        </div>
-        <a href="https://www.instagram.com/vesalioclinic/" target="_blank" rel="noopener noreferrer" class="gallery-instagram-link" aria-label="Síguenos en Instagram">
-          <i class="fab fa-instagram"></i>
-        </a>
-        <p class="gallery-hint gallery-hint--desktop"><i class="fas fa-mouse"></i> Desplázate para girar</p>
-        <div class="gallery-hint gallery-hint--mobile" aria-label="Desliza hacia abajo para girar">
-          <span class="gallery-hint__label">Scroll down</span>
-          <i class="fas fa-chevron-down"></i>
-        </div>
-      </div>
-    </section>
-
     <!-- ===================== EQUIPO ===================== -->
     <section class="team" id="equipo">
       <div class="container">
@@ -171,7 +156,7 @@
         <div class="tpc-wrap">
           <div class="tpc-inner">
             <div class="tpc-photo-block">
-              <img class="tpc-img" id="tpcImg" src="./assets/inigo.png" alt="Íñigo Salazar" loading="lazy" />
+              <img class="tpc-img" id="tpcImg" src="./assets/inigo.jpg" alt="Íñigo Salazar" loading="lazy" />
             </div>
             <div class="tpc-card-block">
               <div class="tpc-card">
@@ -195,13 +180,48 @@
       </div>
     </section>
 
+    <!-- ===================== UBICACIÓN ===================== -->
+    <section class="location" id="ubicacion">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-eyebrow light">Nuestra ubicación</span>
+          <h2 class="section-title light">Nos puedes encontrar <span class="accent">aqui</span></h2>
+        </div>
+
+        <div class="location-grid">
+          <div class="location-info reveal">
+            <div class="location-image">
+              <img src="./assets/location.jpg" alt="Consultorio Vesalio Clinic" loading="lazy" width="400" height="200" />
+            </div>
+            <div class="location-details">
+              <h3><i class="fas fa-location-dot"></i> Dirección</h3>
+              <p>Bosque de Cidros #46 PB<br />Col. Bosques de las Lomas, C.P. 05120, CDMX <em>(exterior naranja)</em>.</p>
+              <p class="location-ref"><i class="fas fa-circle-info"></i> No contamos con estacionamiento, pero podrás encontrar lugar en la calle sin problema</p>
+              <a class="btn btn-outline" href="https://www.google.com/maps/search/?api=1&query=Bosque+de+Cidros+46+Bosques+de+las+Lomas+CDMX" target="_blank" rel="noopener">
+                <i class="fas fa-map-location-dot"></i> Ver en Google Maps
+              </a>
+            </div>
+          </div>
+
+          <div class="location-map reveal">
+            <iframe
+              title="Ubicación Vesalio Clinic"
+              src="https://www.google.com/maps?q=Bosque%20de%20Cidros%2046%20Bosques%20de%20las%20Lomas%20CDMX&output=embed"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===================== AGENDA / CONTACTO ===================== -->
     <section class="booking" id="contacto">
       <div class="container booking-grid">
         <div class="booking-info reveal">
           <span class="section-eyebrow light">Agenda tu cita</span>
           <h2 class="section-title light">Reserva tu espacio en <span class="accent">minutos</span></h2>
-          <p class="section-lead light">Atendemos de lunes a viernes de 9:00 a 19:00 h.</p>
+          <p class="section-lead light">Atendemos de lunes a viernes de 7:00 a 19:00 h.</p>
 
           <div class="booking-channels">
             <a id="waBooking" class="channel" href="https://wa.me/525548423467" target="_blank" rel="noopener">
@@ -222,7 +242,7 @@
               <div class="channel-icon cl"><i class="far fa-clock"></i></div>
               <div>
                 <span class="channel-label">Horario</span>
-                <span class="channel-value">9:00 a 18:00 h</span>
+                <span class="channel-value">7:00 a 19:00 h</span>
               </div>
             </div>
             <div class="channel static">
@@ -280,38 +300,19 @@
       </div>
     </section>
 
-    <!-- ===================== UBICACIÓN ===================== -->
-    <section class="location" id="ubicacion">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="section-eyebrow">Nuestra ubicación</span>
-          <h2 class="section-title">Nos puedes encontrar en<span class="accent"></span></h2>
+    <!-- ===================== GALERÍA ===================== -->
+    <section class="gallery-section" id="galeria">
+      <div class="gallery-sticky">
+        <div class="gallery-header container">
+          <span class="section-eyebrow">Galería</span>
+          <h2 class="section-title">Unete a la Comunidad <span class="accent">Vesalio</span></h2>
         </div>
-
-        <div class="location-grid">
-          <div class="location-info reveal">
-            <div class="location-image">
-              <img src="./assets/location_image.jpeg" alt="Consultorio Vesalio Clinic" loading="lazy" width="400" height="200" />
-            </div>
-            <div class="location-details">
-              <h3><i class="fas fa-location-dot"></i> Dirección</h3>
-              <p>Bosque de Cidros #46 PB<br />Col. Bosques de las Lomas, C.P. 05120, CDMX <em>(exterior naranja)</em>.</p>
-              <p class="location-ref"><i class="fas fa-circle-info"></i> No contamos con estacionamiento, pero podrás encontrar lugar en la calle sin problema</p>
-              <a class="btn btn-outline" href="https://www.google.com/maps/search/?api=1&query=Bosque+de+Cidros+46+Bosques+de+las+Lomas+CDMX" target="_blank" rel="noopener">
-                <i class="fas fa-map-location-dot"></i> Ver en Google Maps
-              </a>
-            </div>
-          </div>
-
-          <div class="location-map reveal">
-            <iframe
-              title="Ubicación Vesalio Clinic"
-              src="https://www.google.com/maps?q=Bosque%20de%20Cidros%2046%20Bosques%20de%20las%20Lomas%20CDMX&output=embed"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              allowfullscreen></iframe>
-          </div>
+        <div class="gallery-3d">
+          <div class="gallery-track" id="galleryTrack"></div>
         </div>
+        <a href="https://www.instagram.com/vesalioclinic/" target="_blank" rel="noopener noreferrer" class="gallery-instagram-link" aria-label="Síguenos en Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
       </div>
     </section>
 
@@ -368,7 +369,7 @@
     <span class="float-wa-tooltip">¡Agenda por WhatsApp!</span>
   </a>
 
-<script src="script.js"></script>
+<script defer src="script.js"></script>
 
 </body>
 </html>

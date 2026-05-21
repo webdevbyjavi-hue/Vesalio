@@ -531,13 +531,29 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 
 /* ---------- SERVICES ---------- */
 .services {
-  background: linear-gradient(180deg, var(--vesalio-cloud) 0%, var(--vesalio-white) 100%);
+  background: var(--color-dark);
+  position: relative;
 }
+.services::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--color-primary) 40%, var(--color-primary) 60%, transparent 100%);
+  box-shadow: 0 0 12px 2px rgba(79, 132, 145, 0.45);
+}
+.services .section-eyebrow { color: rgba(255,255,255,0.55); }
+.services .section-title   { color: #fff; }
+.services .section-title .accent { color: var(--vesalio-blue); }
+.services .section-lead    { color: rgba(255,255,255,0.72); }
 /* ---------- CIRCULAR GALLERY ---------- */
 .gallery-section {
-  height: 500vh;
+  height: 100vh;
   position: relative;
-  background: var(--vesalio-blue-deep);
+  background: var(--vesalio-blue);
   padding: 0; /* override global section padding */
 }
 
@@ -553,6 +569,28 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
   gap: 0;
 }
 
+/* Gradient masks that fade cards away from the title and instagram icon.
+   z-index 5 sits above the 3D canvas (z-index 1) but below header/icon (z-index 10). */
+.gallery-sticky::before,
+.gallery-sticky::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+.gallery-sticky::before {
+  top: 0;
+  height: clamp(170px, 23vh, 220px);
+  background: linear-gradient(to bottom, var(--vesalio-blue) 45%, transparent 100%);
+}
+.gallery-sticky::after {
+  bottom: 0;
+  height: clamp(140px, 20vh, 180px);
+  background: linear-gradient(to top, var(--vesalio-blue) 45%, transparent 100%);
+}
+
 .gallery-header {
   text-align: center;
   position: absolute;
@@ -565,7 +603,7 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 }
 .gallery-header .section-eyebrow { color: rgba(255,255,255,0.7); }
 .gallery-header .section-title   { color: #fff; }
-.gallery-header .section-title .accent { color: var(--vesalio-mist); }
+.gallery-header .section-title .accent { color: rgba(255,255,255,0.7); font-style: italic; }
 
 .gallery-instagram-link {
   position: absolute;
@@ -645,6 +683,7 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 }
 
 .gallery-track {
@@ -699,21 +738,45 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
   }
 }
 
+/* Landscape mobile — very short viewports */
+@media (max-height: 500px) {
+  .gallery-card {
+    width: clamp(70px, 18vh, 120px);
+    height: clamp(100px, 26vh, 170px);
+    margin-left: calc(-1 * clamp(35px, 9vh, 60px));
+    margin-top: calc(-1 * clamp(50px, 13vh, 85px));
+  }
+  .gallery-header {
+    top: clamp(36px, 5vh, 56px);
+  }
+  .gallery-header .section-title {
+    font-size: clamp(1.1rem, 3vh, 1.5rem);
+    margin-bottom: 6px;
+  }
+  .gallery-instagram-link {
+    bottom: clamp(40px, 7vh, 70px);
+    width: 38px;
+    height: 38px;
+    font-size: 1.1rem;
+  }
+}
+
 /* ---------- TEAM ---------- */
 .team {
-  background: #fff;
+  background: var(--vesalio-white);
   position: relative;
   padding-top: clamp(40px, 5vw, 70px);
 }
 .team::before {
   content: '';
-  display: block;
-  width: 60%;
-  max-width: 480px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--vesalio-blue) 50%, transparent 100%);
-  margin: 0 auto;
-  opacity: 0.5;
+  background: linear-gradient(90deg, transparent 0%, var(--color-primary) 40%, var(--color-primary) 60%, transparent 100%);
+  box-shadow: 0 0 12px 2px rgba(79, 132, 145, 0.45);
 }
 
 /* Profile card carousel */
@@ -914,7 +977,7 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 
 /* ---------- BOOKING ---------- */
 .booking {
-  background: linear-gradient(135deg, var(--vesalio-blue-deep) 0%, var(--vesalio-blue-dark) 60%, var(--vesalio-blue) 100%);
+  background: var(--color-dark);
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -1038,7 +1101,7 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 .form-status.err { color: #c0392b; }
 
 /* ---------- LOCATION ---------- */
-.location { background: var(--vesalio-cloud); }
+.location { background: var(--vesalio-blue-deep); }
 .location-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
 .location-info {
   background: #fff;
@@ -1084,11 +1147,22 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 
 /* ---------- FOOTER ---------- */
 .footer {
-  background: var(--vesalio-blue-deep);
+  background: var(--color-dark);
   color: rgba(255,255,255,0.9);
   padding: 70px 0 24px;
   position: relative;
-  z-index: auto;
+  z-index: 20;
+}
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--color-primary) 40%, var(--color-primary) 60%, transparent 100%);
+  box-shadow: 0 0 12px 2px rgba(79, 132, 145, 0.45);
 }
 .footer-grid {
   display: grid;
@@ -1154,8 +1228,11 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
 }
 .footer-bottom-credit:hover { opacity: 1; }
 .footer-bottom-credit span {
-  color: var(--vesalio-mist);
   font-weight: 600;
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 55%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* ---------- Floating WhatsApp ---------- */
@@ -1512,6 +1589,7 @@ section { padding: clamp(70px, 9vw, 120px) 0; position: relative; }
   min-width: 0;
   min-height: 0;
   outline: none;
+  background: linear-gradient(135deg, var(--vesalio-blue-deep) 0%, var(--vesalio-blue-dark) 100%);
 }
 .exp-card:focus-visible { box-shadow: 0 0 0 3px var(--vesalio-blue); }
 
