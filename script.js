@@ -306,21 +306,21 @@ document.addEventListener('DOMContentLoaded', () => {
       name: "Íñigo Salazar",
       role: "Fisioterapeuta deportivo",
       description: "Especializado en deporte y evaluación de movimiento funcional. Triatleta de medias y largas distancias, apasionado del rendimiento humano.",
-      photo: "./assets/inigo.jpg",
+      photo: "./assets/inigo.webp",
       objectPosition: "center 6%",
     },
     {
       name: "Irina Segura",
       role: "Biomecánica de carrera",
       description: "Especialista en ortopedia, deporte y biomecánica de carrera. Triatleta de cortas y medianas distancias, nadadora de aguas abiertas.",
-      photo: "./assets/irina.jpg",
+      photo: "./assets/irina.webp",
       objectPosition: "center 25%",
     },
     {
       name: "Gabriela Mejía",
       role: "Punción seca",
       description: "Especialista en punción seca y liberación de puntos gatillo. Apasionada de la filigrana y el salto de cuerda.",
-      photo: "./assets/gaby.jpg",
+      photo: "./assets/gaby.webp",
       objectPosition: "center top",
     },
     {
@@ -334,14 +334,14 @@ document.addEventListener('DOMContentLoaded', () => {
       name: "Diego [Apellido]",
       role: "Lorem ipsum dolor",
       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vehicula risus at nunc dapibus, vel gravida est fermentum. Corredor apasionado.",
-      photo: "./assets/diego.jpg",
+      photo: "./assets/diego.webp",
       objectPosition: "center top",
     },
     {
       name: "Fercho [Apellido]",
       role: "Lorem ipsum dolor",
       description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus et netus. Ciclista y entusiasta del fitness.",
-      photo: "./assets/fercho.jpg",
+      photo: "./assets/fercho.webp",
       objectPosition: "center 10%",
     },
     {
@@ -637,16 +637,16 @@ window.addEventListener('scroll', () => {
 
 (function () {
   const services = [
-    { name: "Lesiones deportivas",   desc: "Recuperación integral de lesiones en atletas y deportistas de todos los niveles.", icon: "fas fa-person-running", img: "assets/lesiones_deportivas.jpg" },
-    { name: "Rehab. ortopédica",     desc: "Tratamiento de afecciones musculoesqueléticas con enfoque funcional.",             icon: "fas fa-bone", img: "assets/rehab_ortopedica.jpg" },
-    { name: "Ejercicio terapéutico", desc: "Programas de movimiento personalizados según tu condición y objetivos.",           icon: "fas fa-dumbbell", img: "assets/ejercicio_terapeutico.jpg" },
+    { name: "Lesiones deportivas",   desc: "Recuperación integral de lesiones en atletas y deportistas de todos los niveles.", icon: "fas fa-person-running", img: "assets/lesiones_deportivas.webp" },
+    { name: "Rehab. ortopédica",     desc: "Tratamiento de afecciones musculoesqueléticas con enfoque funcional.",             icon: "fas fa-bone", img: "assets/rehab_ortopedica.webp" },
+    { name: "Ejercicio terapéutico", desc: "Programas de movimiento personalizados según tu condición y objetivos.",           icon: "fas fa-dumbbell", img: "assets/ejercicio_terapeutico.webp" },
     { name: "Fortalecimiento",       desc: "Desarrollo de fuerza y estabilidad para un rendimiento óptimo y seguro.",          icon: "fas fa-hand-fist" },
-    { name: "Terapia manual",        desc: "Técnicas manuales especializadas para aliviar el dolor y recuperar movilidad.",    icon: "fas fa-hands", img: "assets/terapia_manual.jpg" },
-    { name: "Agentes físicos",       desc: "Ultrasonido, electroterapia y otros agentes para acelerar la recuperación.",       icon: "fas fa-wave-square", img: "assets/agentes_fisicos.jpg" },
-    { name: "Punción seca",          desc: "Liberación de puntos gatillo mediante agujas de acupuntura.",                      icon: "fas fa-syringe", img: "assets/puncion_seca.jpg" },
-    { name: "Análisis biomecánico",  desc: "Evaluación detallada de tu técnica y eficiencia al correr.",                      icon: "fas fa-shoe-prints", img: "assets/analisis_biomecanico.jpg" },
-    { name: "Retorno al deporte",    desc: "Protocolo progresivo para volver al deporte de forma segura y efectiva.",         icon: "fas fa-trophy", img: "assets/retorno_al_deporte.jpg" },
-    { name: "Descargas musculares",  desc: "Liberación de la tensión muscular acumulada por el entrenamiento.",               icon: "fas fa-hand-holding-medical", img: "assets/descargas_musculares.jpg" },
+    { name: "Terapia manual",        desc: "Técnicas manuales especializadas para aliviar el dolor y recuperar movilidad.",    icon: "fas fa-hands", img: "assets/terapia_manual.webp" },
+    { name: "Agentes físicos",       desc: "Ultrasonido, electroterapia y otros agentes para acelerar la recuperación.",       icon: "fas fa-wave-square", img: "assets/agentes_fisicos.webp" },
+    { name: "Punción seca",          desc: "Liberación de puntos gatillo mediante agujas de acupuntura.",                      icon: "fas fa-syringe", img: "assets/puncion_seca.webp" },
+    { name: "Análisis biomecánico",  desc: "Evaluación detallada de tu técnica y eficiencia al correr.",                      icon: "fas fa-shoe-prints", img: "assets/analisis_biomecanico.webp" },
+    { name: "Retorno al deporte",    desc: "Protocolo progresivo para volver al deporte de forma segura y efectiva.",         icon: "fas fa-trophy", img: "assets/retorno_al_deporte.webp" },
+    { name: "Descargas musculares",  desc: "Liberación de la tensión muscular acumulada por el entrenamiento.",               icon: "fas fa-hand-holding-medical", img: "assets/descargas_musculares.webp" },
   ];
 
   const container = document.getElementById('expCards');
