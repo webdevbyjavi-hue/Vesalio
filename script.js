@@ -368,6 +368,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const nextBtn    = document.getElementById('tpcNext');
   if (!photoBlock || !imgEl) return;
 
+  // Pre-decode all local images so src swaps are instant (images are ~8-16KB each)
+  members.forEach(m => {
+    if (m.photo.startsWith('http')) return;
+    const img = new Image();
+    img.src = m.photo;
+    img.decode().catch(() => {});
+  });
+
   let current = 0;
   let busy    = false;
 
@@ -401,14 +409,18 @@ document.addEventListener('DOMContentLoaded', () => {
     photoBlock.style.opacity = '0';
     cardBlock.style.opacity  = '0';
 
+    // 220ms: safely past the 200ms fade-out transition
     setTimeout(() => {
       current = next;
       render(members[current]);
       syncDots();
-      photoBlock.style.opacity = '1';
-      cardBlock.style.opacity  = '1';
-      setTimeout(() => { busy = false; }, 280);
-    }, 160);
+      // RAF ensures paint happens before opacity restores, preventing flash
+      requestAnimationFrame(() => {
+        photoBlock.style.opacity = '1';
+        cardBlock.style.opacity  = '1';
+        setTimeout(() => { busy = false; }, 220);
+      });
+    }, 220);
   }
 
   // Touch swipe
@@ -425,7 +437,8 @@ document.addEventListener('DOMContentLoaded', () => {
   prevBtn?.addEventListener('click', () => goTo(current - 1));
   nextBtn?.addEventListener('click', () => goTo(current + 1));
 
-  // Entrance animation via IntersectionObserver + CSS transitions
+  // Entrance: slide in via is-entering class (transform transition),
+  // then remove class so goTo only uses the cheap opacity transition.
   if (wrap) {
     photoBlock.style.opacity   = '0';
     photoBlock.style.transform = 'translateX(-30px)';
@@ -434,12 +447,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const entrObs = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
-        photoBlock.style.opacity   = '1';
-        photoBlock.style.transform = '';
-        setTimeout(() => {
-          cardBlock.style.opacity   = '1';
-          cardBlock.style.transform = '';
-        }, 150);
+        wrap.classList.add('is-entering');
+        requestAnimationFrame(() => {
+          photoBlock.style.opacity   = '1';
+          photoBlock.style.transform = '';
+          setTimeout(() => {
+            cardBlock.style.opacity   = '1';
+            cardBlock.style.transform = '';
+            // Remove class after transform transition ends; goTo uses opacity only
+            setTimeout(() => { wrap.classList.remove('is-entering'); }, 720);
+          }, 150);
+        });
         entrObs.disconnect();
       }
     }, { threshold: 0.2 });
